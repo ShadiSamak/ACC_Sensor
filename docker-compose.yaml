@@ -1,0 +1,10 @@
+version: '2.2'
+
+services:
+  sensor-data-processor:
+    build: .
+    ports:
+    - "8000:5000"
+    volumes:
+       - ./output:/app/server/output
+       - ./inputfile:/app/server/inputfile
