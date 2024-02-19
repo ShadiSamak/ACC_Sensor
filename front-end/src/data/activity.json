@@ -1,7 +1,7 @@
 [
     {
         "window": "Analytical Strategy",
-        "note": "*:XXXXXXXX",
+        "note": "Strategy 1: time selection should be used, Strategy 2-> Midnight to midnight",
         "visibility":["enable", "disable", "disable"],
         "start":["0","10","15","20"],
         "end":["12","24","36","48"],

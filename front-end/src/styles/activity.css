@@ -37,10 +37,20 @@
 
 .listboxset{
     display: flex !important ;
-    width: 30vh;
+    width: 25vh;
     text-align: left;
 }
 
+.listboxsetmid{
+    display: flex !important ;
+    width: 32vh;
+    text-align: left;
+}
+.listboxsetlong{
+    display: flex !important ;
+    width: 50vh;
+    text-align: left;
+}
 .longlistbox{
     display: flex !important ;
     width: 75%;
@@ -86,7 +96,7 @@
 }
 
 .longinput{
-    width : 40vh;
+    width : 100%!important;
     text-align: left;
     margin-left: 10px;
 }

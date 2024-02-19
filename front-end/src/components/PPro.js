@@ -1,10 +1,9 @@
 import '../styles/ppro.css'
 import Select from 'react-select'
-import React, { setState, useState } from "react";
+import React, { useState } from "react";
 import window from '../data/ppro.json'
 import { Tooltip } from '@chakra-ui/react'
-import ToggleButton from 'react-toggle-button'
-import RadioButtonSet from '../components/RadioButtonSet'
+import CheckboxButtonSet from '../components/CheckboxButtonSet'
 import Slider from '@mui/material/Slider';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Switch from '@mui/material/Switch';
@@ -13,15 +12,43 @@ import Switch from '@mui/material/Switch';
 const sliderMarks = [
     {
         value: 0.2,
-        label: '0.2',
+        label: '2:24',
+    },
+    {
+        value: 0.3,
+        label: '3:36',
+    },
+    {
+        value: 0.4,
+        label: '4:48',
+    },
+    {
+        value: 0.5,
+        label: '6:00',
+    },
+    {
+        value: 0.6,
+        label: '07:12',
+    },
+    {
+        value: 0.7,
+        label: '08:24',
+    },
+    {
+        value: 0.8,
+        label: '09:36',
+    },
+    {
+        value: 0.9,
+        label: '10:48',
     },
     {
         value: 1,
-        label: '1',
+        label: '12:00',
     }
 ]
 
-export default function PPro() {
+export default function PPro({parentChangeActiveTab, ...rest}){
     const windowoptions = window.map(w => ({
         "window": w.window,
         "data": w.data,
@@ -67,7 +94,7 @@ export default function PPro() {
     }
 
     // keeps the value for the chunk size
-    const [sliderVal, setSliderVal] = useState(0.7);
+    const [sliderVal, setSliderVal] = useState(1);
     const handlephyChunkSizechange = (value) => {
         setSliderVal(value);
         localStorage.setItem("chunk_size", JSON.stringify(value));
@@ -110,6 +137,7 @@ export default function PPro() {
                         <td className='pptableinbox'>
                             <Select id={"Timebox_Eventlister"}
                                 options={window[0].vals}
+                                defaultValue={window[0].vals[1]}
                                 value={selectedlWindow_1}
                                 onChange={handleWindow1Change}
                                 className="pprolistbox" />
@@ -128,6 +156,7 @@ export default function PPro() {
                             <Select id={"Timebox_Eventlister"}
                                 options={window[1].vals}
                                 value={selectedlWindow_2}
+                                defaultValue={window[1].vals[1]}
                                 onChange={handleWindow2Change}
                                 className="pprolistbox" /></td>
 
@@ -145,6 +174,7 @@ export default function PPro() {
                             <Select id={"Timebox_Eventlister"}
                                 options={window[2].vals}
                                 value={selectedlWindow_3}
+                                defaultValue={window[2].vals[2]}
                                 onChange={handleWindow3Change}
                                 className="pprolistbox" />
                         </td>
@@ -171,8 +201,8 @@ export default function PPro() {
                             <td className='pptitle'>
                                 <li style={{ listStyleType: 'square' }}>Physical Activity Intensity Calculation Algorithm:</li>
                             </td>
-                            <td>
-                                <RadioButtonSet change={handlephyActivitychange} radioitems={['ENMO', 'MAD', 'HFEN', 'EN', 'Other']} />
+                            <td >
+                                <CheckboxButtonSet change={handlephyActivitychange} radioitems={['ENMO', 'MAD', 'HFEN', 'EN', 'ActiLife']} />
                             </td>
                         </tr>
                         <br />
@@ -200,7 +230,7 @@ export default function PPro() {
                             <td style={{ width: '40vh', paddingTop: "15pt" }}>
                                 <Slider
                                     onChange={e => { handlephyChunkSizechange(e.target.value)}}
-                                    defaultValue={0.7}
+                                    defaultValue={1}
                                     aria-labelledby="discrete-slider-small-steps"
                                     step={0.1}
                                     min={0.2}
@@ -212,19 +242,17 @@ export default function PPro() {
                                 />
                             </td>
                         </tr>
-
+                        <div style={{ marginLeft:'95vh', marginTop:'10%'}}><a onClick={() =>parentChangeActiveTab("file")} style={{fontSize:20}}>  {'\u2B05'}   PREV  |</a>
+                      <a onClick={() =>parentChangeActiveTab("activity")} style={{fontSize:20}}>  NEXT  {'\u27A1'}</a></div>
                     </td>
+                    
                 </tr>
-
-            </table>
-            <table>
                 <tr>
-                    <td style={{ width: '105vh', height: '20vh', textAlign: 'right', verticalAlign: 'middle' }}>
-                        <button className='confirm-button' onClick={saveconfig}>CONFIRM</button>
-                    </td>
 
-                </tr>
+
+            </tr>
             </table>
+
         </div>
     )
 }

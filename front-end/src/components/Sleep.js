@@ -1,8 +1,9 @@
 import { flexbox } from "@mui/system";
+import { useState } from "react";
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Switch from '@mui/material/Switch';
 import '../styles/sleep.css';
-export default function Sleep() {
+export default function Sleep({parentChangeActiveTab, ...rest}) {
     function saveconfig() {
         //console.log("windows_1: " + localStorage.getItem('windows_1'))
         console.log("Saved!")
@@ -48,7 +49,8 @@ export default function Sleep() {
         <table>
             <tr>
             <td style={{ width: '115vh', height: '80vh', textAlign: 'right', verticalAlign: 'middle' }}>
-                    <button className='confirm-button' onClick={saveconfig}>CONFIRM</button>
+                    <div style={{ marginRight:'30px'}}><a onClick={() =>parentChangeActiveTab("activity")} style={{fontSize:20}}>  {'\u2B05'}   PREV  |</a>
+                      <a onClick={() =>parentChangeActiveTab("run")} style={{fontSize:20}}>  NEXT  {'\u27A1'}</a></div>
                 </td>
 
             </tr>
@@ -57,7 +59,10 @@ export default function Sleep() {
     )
 }
 
-
+/*
+<button Style='borderWidth:0px !important' className='confirm-button' onClick={saveconfig}>{'\u2B05'}    PREVIOUS</button>
+<button className='confirm-button' onClick={saveconfig}>NEXT  {'\u27A1'}</button>
+*/
 
 
 

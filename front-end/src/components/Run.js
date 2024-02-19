@@ -145,7 +145,7 @@ export default function Run() {
     }
 
     return (
-        <table style={{ marginLeft: '5vh', marginRight: '5vh', height: '60vh' }}>
+        <table style={{ marginLeft: '10vh', marginRight: '5vh', height: '60vh' }}>
             <tr>
                 <td className="cells-report">
                     <div style={{ textAlign: 'right' }}>

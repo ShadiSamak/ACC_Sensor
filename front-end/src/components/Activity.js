@@ -1,23 +1,178 @@
 import Select from 'react-select'
-import React, { setState, useState } from "react";
+import React, { setState, useState, useEffect } from "react";
 import data from '../data/activity.json'
 import { Tooltip } from '@chakra-ui/react'
 import IDButton from './IDButton';
 import Slider from '@mui/material/Slider';
 import literature from '../data/literature.json'
+import litr from '../data/lit.json'
 import '../styles/activity.css'
-export default function Activity() {
+export default function Activity({ parentChangeActiveTab, ...rest }) {
 
-
-
+    function convertArrayToOptions(array) {
+        const uniqueAgeSet = new Set(array);
+        const temp = Array.from(uniqueAgeSet);
+        return temp.map((item, index) => ({
+            value: `${item}`,
+            label: `${item}`,
+        }));
+    }
 
 
     // Anlytical-Strategy
     const [analyticalstrategy, setAnalyticalStrategy] = useState();
+    const [strategyVisibility, setlStrategyVisibility] = useState();
+
+
+    // Age-Group
+    const [ageGroupOptions, setAgeGroupOptions] = useState([]);
+    const [selectedlAgeGroup, setAgeGroup] = useState();
+
+    // Age
+    const [ageOptions, setAgeOptions] = useState([]);
+    const [selectedlAge, setAge] = useState();
+
+    // Device
+    const [deviceOptions, setDeviceOptions] = useState([]);
+    const [selectedlDevice, setDevice] = useState();
+
+    // Position
+    const [positionOptions, setPositionOptions] = useState([]);
+    const [selectedlPosition, setPosition] = useState();
+
+    //Cut Point
+    const [cutPointsOptions, setCutPointsOptions] = useState([]);
+    const [selectedCutPoints, setSelectedCutPoints] = useState();
+
+    // Detection Metric
+    const [cpoint, setcpoints] = useState();
+
+    useEffect(() => {
+        //Age-Group
+        setAgeGroupOptions(convertArrayToOptions(litr.map(obj => obj["Group"])))
+
+        //Age
+        setAgeOptions(convertArrayToOptions(litr.map(obj => obj["Age"])))
+
+        //Device
+        setDeviceOptions(convertArrayToOptions(litr.map(obj => obj["Device"])));
+
+        //Position
+        setPositionOptions(convertArrayToOptions(litr.map(obj => obj["Placement"])))
+
+        //Cut-Points  
+        setCutPointsOptions(convertArrayToOptions(litr.map(obj => JSON.stringify(obj["CutPoint"]))))
+    }, []);
+
+    // Event Handlers
+
+    // Anlytical-Strategy
     const handleAnalyticalStrategy = (event) => {
         setAnalyticalStrategy(event);
+        setlStrategyVisibility(strategyVisibility => !strategyVisibility);
         localStorage.setItem("analytical_strategy", JSON.stringify(event.value.toString()));
     }
+
+    // Age-Group
+    const handleAgeGroupChange = (event) => {
+        setAgeGroup(event);
+        localStorage.setItem("age_group", JSON.stringify(event.value.toString()));
+
+        // changes the age list accordingly
+        const valuesForAge = litr.filter(obj => obj["Group"] === event.value.toString()).map(obj => obj["Age"]);
+        const ageDic = convertArrayToOptions(valuesForAge)
+
+        if (ageDic.length === 1) {
+            handleAgeChange({ value: ageDic[0].value, label: ageDic[0].value })
+        }
+        else {
+            setAge("")
+            setDevice("")
+            setPosition("")
+            setSelectedCutPoints("");
+        }
+        setAgeOptions(ageDic)
+    }
+
+    // Age
+    const handleAgeChange = (event) => {
+        setAge(event);
+        localStorage.setItem("age", JSON.stringify(event.value.toString()));
+
+        // changes the device list accordingly
+        const valuesForDevice = litr.filter(obj => obj["Age"] === event.value.toString()).map(obj => obj["Device"]);
+        const devDic = convertArrayToOptions(valuesForDevice)
+        if (devDic.length === 1) {
+            handleDeviceChange({ value: devDic[0].value, label: devDic[0].value })
+        }
+        else {
+            setDevice("")
+            setPosition("")
+            setSelectedCutPoints("");
+        }
+
+        setDeviceOptions(devDic)
+    }
+
+    // Device
+    const handleDeviceChange = (event) => {
+        setDevice(event);
+        localStorage.setItem("device", JSON.stringify(event.value.toString()));
+        const valuesForPosition = litr.filter(obj =>
+            obj["Group"] == selectedlAgeGroup['value'] &&
+            obj["Age"] === selectedlAge['value'] &&
+            obj["Device"] === event.value.toString()
+        ).map(obj => obj["Placement"]);
+        const posDic = convertArrayToOptions(valuesForPosition)
+
+        if (posDic.length === 1) {
+            handlePositionChange({ value: posDic[0].value, label: posDic[0].value })
+        }
+        else {
+            setPosition("")
+            setSelectedCutPoints("");
+        }
+        setPositionOptions(posDic)
+    }
+
+    // Position
+    const handlePositionChange = (event) => {
+        setPosition(event);
+        localStorage.setItem("position", JSON.stringify(event.value.toString()));
+
+        const valuesForCutPoints = litr.filter(obj =>
+            obj["Group"] == selectedlAgeGroup['value'] &&
+            obj["Age"] === selectedlAge['value'] &&
+            obj["Device"] === selectedlDevice['value'] &&
+            obj["Placement"] === event.value.toString()
+        ).map(obj => JSON.stringify(obj["CutPoint"]));
+
+        const cPointDic = convertArrayToOptions(valuesForCutPoints)
+        if (cPointDic.length === 1) {
+            handlesetSetpointsChange({ value: cPointDic[0].value, label: cPointDic[0].value })
+        }
+        else {
+            setSelectedCutPoints("");
+        }
+        setCutPointsOptions(cPointDic)
+    }
+
+    //Cut Point
+    const handlesetSetpointsChange = (event) => {
+        setSelectedCutPoints(event);
+        localStorage.setItem("cutpoints", JSON.stringify(event.value.toString()));
+    }
+
+    // Detection Metric
+    const handlecutpointsChange = (event) => {
+        setcpoints(event);
+        localStorage.setItem("detection_metric", JSON.stringify(event.value.toString()));
+    }
+    const cpoints = literature.filter(x => x.type.includes("detectionMetric"))
+    const cpointoptions = cpoints.map((t, index) => ({
+        "value": t.point_1 + "," + t.point_2 + "," + t.point_3,
+        "label": index + "-" + t.author + "," + t.year + "," + t.point_1 + "," + t.point_2 + "," + t.point_3,
+    }))
 
 
     // Start & End valus
@@ -37,13 +192,13 @@ export default function Activity() {
     const [sliderVal, setSliderVal] = useState(0.7);
     const sliderMarks = [{ value: 0.2, label: '0.2', },
     { value: 1, label: '1', }]
-    const handleSliderMarksChange = (event) => { 
+    const handleSliderMarksChange = (event) => {
         setSliderVal(event.target.value.toString());
-        localStorage.setItem("interruption_rate", JSON.stringify(event.target.value.toString())); 
+        localStorage.setItem("interruption_rate", JSON.stringify(event.target.value.toString()));
     }
 
     // Slider Time_Period_1
-    const [timePeriod1, settimePeriod1] = useState([8, 12]);
+    const [timePeriod1, settimePeriod1] = useState(0);
     const timePeriod1change = (event, newValue) => {
         settimePeriod1(newValue);
         localStorage.setItem("sel_per_1", JSON.stringify(newValue.toString()));
@@ -52,18 +207,18 @@ export default function Activity() {
     { value: 24, label: '24', }]
 
     // Slider Time_Period_2
-    const [timePeriod2, settimePeriod2] = useState([16, 20]);
+    const [timePeriod2, settimePeriod2] = useState(0);
     const timePeriod2change = (event, newValue) => {
         settimePeriod2(newValue);
         localStorage.setItem("sel_per_2", JSON.stringify(newValue.toString()));
     };
 
     // Slider Max_Num_Days
-    const [maxNumDays, settmaxNumDays] = useState(3);
-    const maxNumDayschange = (event, newValue) => {
-        settmaxNumDays(newValue);
-        localStorage.setItem("max_num_days", JSON.stringify(newValue.toString()));
-    };
+    //const [maxNumDays, settmaxNumDays] = useState(3);
+    //const maxNumDayschange = (event, newValue) => {
+    //    settmaxNumDays(newValue);
+    //    localStorage.setItem("max_num_days", JSON.stringify(newValue.toString()));
+    //};
 
     const maxNumrMarks = [{ value: 0, label: '0', }, { value: 1, label: '1', },
     { value: 2, label: '2', }, { value: 3, label: '3', }, { value: 8, label: '8', }]
@@ -75,63 +230,23 @@ export default function Activity() {
         localStorage.setItem("analytical_window", JSON.stringify(newValue.toString()));
     };
 
-
-    // Device
-    const device = data.filter(x => x.window.includes("Device"))
-    const [selectedlDevice, setDevice] = useState();
-    const handleDeviceChange = (event) => { 
-        setDevice(event); 
-        localStorage.setItem("device", JSON.stringify(event.value.toString()));
-    }
-
-    // Position
-    const position = data.filter(x => x.window.includes("Position"))
-    const [selectedlPosition, setPosition] = useState();
-    const handlePositionChange = (event) => { 
-        setPosition(event); 
-        localStorage.setItem("position", JSON.stringify(event.value.toString()));
-    }
-
-    // Age-Group
-    const ageGroup = data.filter(x => x.window.includes("Age-group"))
-    const [selectedlAgeGroup, setAgeGroup] = useState();
-    const handleAgeGroupChange = (event) => { 
-        setAgeGroup(event); 
-        localStorage.setItem("age_group", JSON.stringify(event.value.toString()));
-    }
-
     //Cut Point
-    const [setpoints, setSetpoints] = useState();
-    const handlesetSetpointsChange = (event) => { 
-        setSetpoints(event);
-        localStorage.setItem("cutpoints", JSON.stringify(event.value.toString())); 
-    }
-    const lit = literature.filter(x => x.type.includes("cutpoint"))
-    const litoptions = lit.map(t => ({
-        "value": t.point_1 + "," + t.point_2 + "," + t.point_3,
-        "label": t.author + "," + t.year + "," + t.point_1 + "," + t.point_2 + "," + t.point_3,
-    }))
+    //const lit = literature.filter(x => x.type.includes("cutpoint"))
+    //const litoptions = lit.map(t => ({
+    //    "value": t.point_1 + "," + t.point_2 + "," + t.point_3,
+    //    "label": t.author + "," + t.year + "," + t.point_1 + "," + t.point_2 + "," + t.point_3,
+    //}))
 
-    // Detection Metric
-    const [cpoint, setcpoints] = useState();
-    const handlecutpointsChange = (event) => { 
-        setcpoints(event); 
-        localStorage.setItem("detection_metric", JSON.stringify(event.value.toString())); 
-    }
-    const cpoints = literature.filter(x => x.type.includes("detectionMetric"))
-    const cpointoptions = cpoints.map((t, index) => ({
-        "value": t.point_1 + "," + t.point_2 + "," + t.point_3,
-        "label": index + "-" + t.author + "," + t.year + "," + t.point_1 + "," + t.point_2 + "," + t.point_3,
-    }))
+
 
 
     // MVPA
     const mvpa = data.filter(x => x.window.includes("MVPA"))
     const [selectedlMVPA, setMvpa] = useState();
-    const handleMVPAChange = (event) => { 
-        setMvpa(event); 
-        localStorage.setItem("MVPA_duration", JSON.stringify(event.value.toString())); 
-        
+    const handleMVPAChange = (event) => {
+        setMvpa(event);
+        localStorage.setItem("MVPA_duration", JSON.stringify(event.value.toString()));
+
     }
 
     function saveconfig() {
@@ -160,6 +275,7 @@ export default function Activity() {
                     <td style={{ width: '40vh' }} >
                         <Select id={"Timebox_Eventlister"}
                             options={data[0].vals}
+                            defaultValue={data[0].vals[0]}
                             isOptionDisabled={(option) => option.disabled}
                             value={analyticalstrategy}
                             onChange={handleAnalyticalStrategy}
@@ -182,10 +298,11 @@ export default function Activity() {
                     </td>
 
                     <td >
-                        <p style={{ fontSize: '10pt', fontStyle: 'italic', textDecoration: 'underline' }}>Selection Period 1</p>
+                        <p style={{ fontSize: '10pt', fontStyle: 'italic', textDecoration: 'underline' }}>Hours after midnight to start</p>
                         <Slider
+                            disabled={strategyVisibility}
                             style={{ width: '80%' }}
-                            getAriaLabel={() => 'Time Range 1'}
+                            aria-label="Default"
                             value={timePeriod1}
                             min={0}
                             max={24}
@@ -194,10 +311,11 @@ export default function Activity() {
                             marks={tp1_sliderMarks} />
                     </td>
                     <td>
-                        <p style={{ fontSize: '10pt', fontStyle: 'italic', textDecoration: 'underline' }}>Selection Period 2</p>
+                        <p style={{ fontSize: '10pt', fontStyle: 'italic', textDecoration: 'underline' }}>Hours before the next midnight</p>
                         <Slider
+                            disabled={strategyVisibility}
                             style={{ width: '80%' }}
-                            getAriaLabel={() => 'Time Range 2'}
+                            aria-label="Default"
                             value={timePeriod2}
                             min={0}
                             max={24}
@@ -206,28 +324,26 @@ export default function Activity() {
                             marks={tp1_sliderMarks} />
                     </td>
                 </tr>
-                <tr>
-                    <td style={{ textAlign: 'right' }}><p style={{ fontSize: '10pt' }}>- Maximum Number of Days</p>
+                <tr style={{ verticalAlign: 'middle' }}>
+                    <td style={{ textAlign: 'left', verticalAlign: 'middle' }}>
+                        <li style={{ listStyleType: 'disc' }}>
+                            <span style={{ fontSize: '15pt' }}> Include Day Crit</span>
+                        </li>
                     </td>
-                    <td >
+                    <td>
+                        <p> </p>
                         <Slider
                             style={{ width: '80%' }}
-                            onChange={maxNumDayschange}
-                            defaultValue={3}
-                            aria-labelledby="Max Num Days"
-                            min={0}
-                            max={8}
+                            defaultValue={8}
+                            max={24}
+                            aria-label="Default"
                             valueLabelDisplay="auto"
-                            size="medium"
-                            aria-label="Small"
-                            marks={maxNumrMarks} />
+                            marks={tp1_sliderMarks} />
                     </td>
-
                 </tr>
 
                 <tr style={{ verticalAlign: 'middle' }}>
                     <td style={{ textAlign: 'left', verticalAlign: 'middle' }}>
-
                         <li style={{ listStyleType: 'disc' }}>
                             <span style={{ fontSize: '15pt' }}> Analytical Window</span>
                         </li>
@@ -250,96 +366,111 @@ export default function Activity() {
                 </tr>
             </table>
             <br />
-            <table style={{ marginLeft: '5vh' }}>
+
+
+            <table style={{ marginLeft: '5vh', textAlign: 'left' }}>
                 <tr>
-                    <td >
+                    <td style={{ width: '28%' }}>
+                        <div className= "listboxsetmid">
+                            <li style={{ listStyleType: 'disc' }}>
+                                <span style={{ fontSize: '15pt' }}> Age-group</span>
+                            </li>
+
+                            <Select id={"AgeGroup"}
+                                options={ageGroupOptions}
+                                value={selectedlAgeGroup}
+                                onChange={handleAgeGroupChange}
+                                className="listbox" />
+
+                        </div>
+                    </td>
+
+
+
+                    <td style={{ width: '24%' }}>
+
+                        <div className=" listboxset">
+
+                            <li style={{ listStyleType: 'disc' }}>
+                                <span style={{ fontSize: '15pt' }}> Age</span>
+                            </li>
+                            <Select id={"Age"}
+                                options={ageOptions}
+                                value={selectedlAge}
+                                onChange={handleAgeChange}
+                                className="listbox" />
+                        </div>
+                    </td>
+
+
+
+                    <td style={{ width: '24%' }}>
+
                         <div className=" listboxset">
                             <li style={{ listStyleType: 'disc' }}>
                                 <span style={{ fontSize: '15pt' }}> Device</span>
                             </li>
                             <Select id={"Device"}
-                                options={device[0].vals}
+                                options={deviceOptions}
                                 value={selectedlDevice}
                                 onChange={handleDeviceChange}
                                 className="listbox" />
                         </div>
                     </td>
-                    <td >
-                        <div className=" listboxset">
+
+                    <td style={{ width: '24%' }}>
+                        <div className=" listboxsetmid">
                             <li style={{ listStyleType: 'disc' }}>
                                 <span style={{ fontSize: '15pt' }}> Position</span>
                             </li>
                             <Select id={"Device"}
-                                options={position[0].vals}
+                                options={positionOptions}
                                 value={selectedlPosition}
                                 onChange={handlePositionChange}
-                                className="listbox" /></div>
-                    </td>
-                    <td>
-                        <div className=" listboxset">
-                            <li style={{ listStyleType: 'disc' }}>
-                                <span style={{ fontSize: '15pt' }}> Age-group</span>
-
-                            </li>
-                            <Select id={"AgeGroup"}
-                                options={ageGroup[0].vals}
-                                value={selectedlAgeGroup}
-                                onChange={handleAgeGroupChange}
                                 className="listbox" />
                         </div>
                     </td>
                 </tr>
             </table>
             <br />
-            <table>
+            <table style={{ marginLeft: '5vh' }}>
                 <tr>
-                    <td>
-                        <div className="longlistbox" style={{ marginLeft: '5vh' }}>
-                            <li style={{ listStyleType: 'disc' }}>
+                    <td style={{ width: '50%'}}>
+                        <div className="listboxsetlong">
+                            <li style={{ listStyleType: 'disc', width: '15vh' }}>
                                 <span style={{ fontSize: '15pt' }}> Cutpoints</span></li>
+                            <Select id={"Cutpoints"}
+                                className="longinput"
+                                options={cutPointsOptions}
+                                value={selectedCutPoints}
+                                onChange={handlesetSetpointsChange} />
                         </div>
                     </td>
-                    <td style={{ width: '80vh' }}>
-                        <Select id={"Cutpoints"}
-                            className="longinput"
-                            options={litoptions}
-                            value={setpoints}//literature[0].author}
-                            onChange={handlesetSetpointsChange} />
-
-                    </td>
-                </tr>
-                <br />
-                <tr >
-                    <td>
-                        <li style={{ marginLeft: '5vh', listStyleType: 'disc', textAlign: 'left' }}>
-                            <span style={{ fontSize: '15pt' }}> Bouts</span>
-                        </li>
-                    </td>
-                </tr>
-            </table>
-            <table>
-                <tr>
-                    <td className='test' style={{ width: '28vh', display: 'flex' }} >
-                        <li style={{ marginLeft: '10vh', listStyleType: 'circle' }}>
-                            <span style={{ fontSize: '15pt' }}> Detection metric</span>
-                        </li>
+                    <td style={{ width: '50%' }}>
+                        <div style={{marginLeft:'8vh'}} className="listboxsetmid">
+                            <li style={{ listStyleType: 'disc', width: '20vh' }}>
+                                <span style={{ fontSize: '15pt' }}> Detection metric</span></li>
+                            <Select id={"detection_metric"}
+                                style={{
+                                    width: '80vh',
+                                    marginLeft: '1%',
+                                    borderRadius: '4px',
+                                    border: '1px solid #73a7f0'
+                                }}
+                                options={cpointoptions}
+                                value={cpoint}
+                                onChange={handlecutpointsChange}
+                            />
+                        </div>
                     </td>
 
-                    <td style={{ width: '50vh', textAlign: 'left' }}>
-                        <Select id={"detection_metric"}
-                            style={{
-                                width: '80vh',
-                                marginLeft: '1%',
-                                borderRadius: '4px',
-                                border: '1px solid #73a7f0'
-                            }}
-                            options={cpointoptions}
-                            value={cpoint}
-                            onChange={handlecutpointsChange}
-                        />
-                    </td>
+
+
+
                 </tr>
+
             </table>
+
             <br />
             <table >
                 <tr>
@@ -390,7 +521,11 @@ export default function Activity() {
             <>
 
                 <td style={{ width: '115vh', height: '8vh', textAlign: 'right', verticalAlign: 'middle' }}>
-                    <button className='confirm-button' onClick={saveconfig}>CONFIRM</button>
+
+                    <div style={{ marginLeft: '15vh' }}><a onClick={() => parentChangeActiveTab("preprocessing")} style={{ fontSize: 20 }}>  {'\u2B05'}   PREV  |</a>
+                        <a onClick={() => parentChangeActiveTab("sleep")} style={{ fontSize: 20 }}>  NEXT  {'\u27A1'}</a></div>
+
+
                 </td>
 
 
@@ -398,3 +533,37 @@ export default function Activity() {
         </>
     )
 }
+
+
+/*
+
+                <tr>
+                    <td style={{ textAlign: 'right' }}><p style={{ fontSize: '10pt' }}>- Maximum Number of Days</p>
+                    </td>
+                    <td >
+                        <Slider
+                            style={{ width: '80%' }}
+                            onChange={maxNumDayschange}
+                            defaultValue={3}
+                            aria-labelledby="Max Num Days"
+                            min={0}
+                            max={8}
+                            valueLabelDisplay="auto"
+                            size="medium"
+                            aria-label="Small"
+                            marks={maxNumrMarks} />
+                    </td>
+
+                </tr>
+
+
+
+
+
+                                    <td>
+                        <li style={{ marginLeft: '5vh', listStyleType: 'disc', textAlign: 'left' }}>
+                            <span style={{ fontSize: '15pt' }}> Bouts</span>
+                        </li>
+                    </td>
+
+*/

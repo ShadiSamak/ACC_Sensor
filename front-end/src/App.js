@@ -1,7 +1,7 @@
 import './App.css';
 import Tab from 'react-bootstrap/Tab';
 import Tabs from 'react-bootstrap/Tabs';
-
+import { useState } from 'react';
 import File from './components/File';
 import PPro from './components/PPro';
 import Run from './components/Run';
@@ -42,6 +42,11 @@ function setmemory(){
 }
 
   export default function App() {
+  const [activeTab, setActiveTab] = useState('');
+  
+  function changeActiveTab (event) {
+    setActiveTab(event)
+  }
 
   useEffect(() => {
     const result = setmemory();
@@ -55,25 +60,28 @@ function setmemory(){
       </header>
       <div className='sdp'>
         <Tabs
-          defaultActiveKey="profile"
+          activeKey={activeTab}
           id="justify-tab-example"
           className="mb-3"
           justify
+          onSelect={changeActiveTab}
+          onChange={changeActiveTab}
         >
+          
           <Tab eventKey="file" title="File">
-            <File />
+            <File parentChangeActiveTab={changeActiveTab} activeKey={activeTab}/>
           </Tab>
-          <Tab eventKey="per-processing" title="Pre-Processing">
-            <PPro />
+          <Tab eventKey="preprocessing" title="Pre-Processing">
+            <PPro parentChangeActiveTab={changeActiveTab} activeKey={activeTab}/>
           </Tab>
           <Tab eventKey="activity" title="Activity">
-            <Activity />
+            <Activity parentChangeActiveTab={changeActiveTab} activeKey={activeTab}/>
           </Tab>
           <Tab eventKey="sleep" title="Sleep">
-            <Sleep />
+            <Sleep parentChangeActiveTab={changeActiveTab} activeKey={activeTab}/>
           </Tab>
           <Tab eventKey="run" title="Run">
-            <Run />
+            <Run parentChangeActiveTab={changeActiveTab} activeKey={activeTab}/>
           </Tab>
         </Tabs>
       </div>
