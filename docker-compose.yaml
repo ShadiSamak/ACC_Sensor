@@ -6,5 +6,5 @@ services:
     ports:
     - "8000:5000"
     volumes:
-       - ./output:/app/server/output
-       - ./inputfile:/app/server/inputfile
+       - ./output:/app/backend/output
+       - ./inputfile:/app/backend/inputfile

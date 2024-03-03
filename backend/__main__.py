@@ -1,5 +1,5 @@
 import flask
-from flask import request, send_from_directory, send_file, redirect, url_for
+from flask import Flask, request, send_from_directory, send_file
 import os
 # app = flask.Flask(__name__)
 # path = "frontend"
@@ -11,7 +11,7 @@ import os
 
 
 app = flask.Flask(__name__, static_url_path='',
-                  static_folder='../front-end/build')
+                  static_folder='../frontend/build')
 # CORS(app) #comment this on deployment
 # api = Api(app)
 
@@ -19,7 +19,7 @@ app = flask.Flask(__name__, static_url_path='',
 @app.route("/", defaults={'path': ''})
 def serve(path):
     return send_from_directory(app.static_folder, 'index.html')
-
+    #return render_template('index.html')
 
 @app.route('/input', methods=['POST'])
 def upload_file():

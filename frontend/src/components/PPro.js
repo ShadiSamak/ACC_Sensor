@@ -3,7 +3,7 @@ import Select from 'react-select'
 import React, { useState } from "react";
 import window from '../data/ppro.json'
 import { Tooltip } from '@chakra-ui/react'
-import CheckboxButtonSet from '../components/CheckboxButtonSet'
+import CheckboxButtonSet from './CheckboxButtonSet'
 import Slider from '@mui/material/Slider';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Switch from '@mui/material/Switch';

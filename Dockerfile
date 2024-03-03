@@ -2,7 +2,7 @@ FROM python:3.9-alpine
 RUN mkdir /app
 ADD . /app
 
-WORKDIR /app/front-end
+WORKDIR /app/frontend
 RUN apk update && apk upgrade && \
     apk add nodejs \
     npm                       
@@ -10,7 +10,7 @@ RUN apk update && apk upgrade && \
 RUN npm install
 RUN npm run build
 
-WORKDIR /app/server
-RUN pip install -r requirements.txt
+WORKDIR /app/backend
+RUN pip install --no-cache-dir -r requirements.txt
 #RUN apk add r-base
 CMD ["python", "__main__.py"]

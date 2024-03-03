@@ -18,6 +18,22 @@ export default function Activity({ parentChangeActiveTab, ...rest }) {
         }));
     }
 
+    function convertDictToOptions(dict) {
+        const dropdownValues = [];
+        dict.forEach(item => {
+            dropdownValues.push("Light:"+item['Light']+
+                                ", Moderate:"+ item['Moderate']+
+                                ", Vigorous:"+ item['Vigorous'])
+        }); 
+        
+        return dropdownValues.map((item, index) => ({
+            value: `${item}`,
+            label: `${item}`,
+        }));
+    }
+
+    // Filtered Literature
+    const [filtLit, setfiltLit] = useState(litr);
 
     // Anlytical-Strategy
     const [analyticalstrategy, setAnalyticalStrategy] = useState();
@@ -26,11 +42,11 @@ export default function Activity({ parentChangeActiveTab, ...rest }) {
 
     // Age-Group
     const [ageGroupOptions, setAgeGroupOptions] = useState([]);
-    const [selectedlAgeGroup, setAgeGroup] = useState();
+    const [selectedAgeGroup, setAgeGroup] = useState();
 
     // Age
     const [ageOptions, setAgeOptions] = useState([]);
-    const [selectedlAge, setAge] = useState();
+    const [selectedAge, setSelectedAge] = useState();
 
     // Device
     const [deviceOptions, setDeviceOptions] = useState([]);
@@ -64,8 +80,60 @@ export default function Activity({ parentChangeActiveTab, ...rest }) {
         setCutPointsOptions(convertArrayToOptions(litr.map(obj => JSON.stringify(obj["CutPoint"]))))
     }, []);
 
+    
     // Event Handlers
+    const setFilter = async (event, item) => {     
+        if (item === 'AgeGroup')
+            setfiltLit(litr.filter(obj => obj["Group"] === event.value.toString()));
 
+        if (item === 'Age')
+            setfiltLit(filtLit.filter(obj => obj["Age"] === event.value.toString()));
+
+        if (item === 'Dev')
+            setfiltLit(filtLit.filter(obj => obj["Device"] === event.value.toString()));
+
+        if (item === 'Pos')
+            setfiltLit(filtLit.filter(obj => obj["Placement"] === event.value.toString()));
+
+        if (item ==='Cup')
+            console.log(filtLit)
+            //setfiltLit(filtLit.filter(obj => obj["CutPoint"] === event.value.toString()));
+    };
+
+    useEffect(() => {
+        console.log(filtLit)
+        const ages = Array.from(new Set(filtLit.map(item => item.Age)))
+        const devices = Array.from(new Set(filtLit.map(item => item.Device)))
+        const positions = Array.from(new Set(filtLit.map(item => item.Placement)))
+        const cutpoints = Array.from(new Set(filtLit.map(item => item.CutPoint)))
+
+        setAgeOptions(convertArrayToOptions(ages))
+        setDeviceOptions(convertArrayToOptions(devices))
+        setPositionOptions(convertArrayToOptions(positions))
+        setCutPointsOptions(convertDictToOptions(cutpoints))
+
+
+        if (ages.length === 1 )
+            setSelectedAge (convertArrayToOptions(ages))
+        else
+            setSelectedAge ("")
+        
+        if (devices.length === 1 )
+            setDevice (convertArrayToOptions(devices))
+        else
+            setDevice ("")
+        
+        if (positions.length === 1 )
+            setPosition (convertArrayToOptions(positions))
+        else
+            setPosition ("")
+        
+        if (cutpoints.length === 1 )
+            setSelectedCutPoints (convertDictToOptions(cutpoints))
+
+
+    }, [filtLit]);
+    
     // Anlytical-Strategy
     const handleAnalyticalStrategy = (event) => {
         setAnalyticalStrategy(event);
@@ -74,92 +142,59 @@ export default function Activity({ parentChangeActiveTab, ...rest }) {
     }
 
     // Age-Group
-    const handleAgeGroupChange = (event) => {
-        setAgeGroup(event);
+    const handleAgeGroupChange =  async (event) => {
+        console.log(event)
         localStorage.setItem("age_group", JSON.stringify(event.value.toString()));
-
+        setAgeGroup (event)
         // changes the age list accordingly
         const valuesForAge = litr.filter(obj => obj["Group"] === event.value.toString()).map(obj => obj["Age"]);
-        const ageDic = convertArrayToOptions(valuesForAge)
-
-        if (ageDic.length === 1) {
-            handleAgeChange({ value: ageDic[0].value, label: ageDic[0].value })
-        }
-        else {
-            setAge("")
-            setDevice("")
-            setPosition("")
-            setSelectedCutPoints("");
-        }
-        setAgeOptions(ageDic)
+        setFilter (event, 'AgeGroup', convertArrayToOptions(valuesForAge))
     }
 
     // Age
-    const handleAgeChange = (event) => {
-        setAge(event);
+    const handleAgeChange =  (event) => {
+        setSelectedAge(event);
         localStorage.setItem("age", JSON.stringify(event.value.toString()));
 
         // changes the device list accordingly
-        const valuesForDevice = litr.filter(obj => obj["Age"] === event.value.toString()).map(obj => obj["Device"]);
-        const devDic = convertArrayToOptions(valuesForDevice)
-        if (devDic.length === 1) {
-            handleDeviceChange({ value: devDic[0].value, label: devDic[0].value })
-        }
-        else {
-            setDevice("")
-            setPosition("")
-            setSelectedCutPoints("");
-        }
-
-        setDeviceOptions(devDic)
+        const valuesForDevice = filtLit.filter(obj => obj["Age"] === event.value.toString()).map(obj => obj["Device"]);
+        setFilter (event, 'Age', convertArrayToOptions(valuesForDevice))
     }
 
     // Device
-    const handleDeviceChange = (event) => {
-        setDevice(event);
+    const handleDeviceChange =  (event) => {
+        //setDevice(event);
         localStorage.setItem("device", JSON.stringify(event.value.toString()));
-        const valuesForPosition = litr.filter(obj =>
-            obj["Group"] == selectedlAgeGroup['value'] &&
-            obj["Age"] === selectedlAge['value'] &&
+        console.log(selectedAgeGroup , selectedAge)
+        const valuesForPosition = filtLit.filter(obj =>
+            obj["Group"] == selectedAgeGroup['value'] &&
+            obj["Age"] === selectedAge['value'] &&
             obj["Device"] === event.value.toString()
         ).map(obj => obj["Placement"]);
-        const posDic = convertArrayToOptions(valuesForPosition)
 
-        if (posDic.length === 1) {
-            handlePositionChange({ value: posDic[0].value, label: posDic[0].value })
-        }
-        else {
-            setPosition("")
-            setSelectedCutPoints("");
-        }
-        setPositionOptions(posDic)
+
+        const posDic = convertArrayToOptions(valuesForPosition)
+        setFilter (event, 'Dev', convertArrayToOptions(posDic))
+
     }
 
     // Position
-    const handlePositionChange = (event) => {
-        setPosition(event);
+    const handlePositionChange =  (event) => {
+        //setPosition(event);
         localStorage.setItem("position", JSON.stringify(event.value.toString()));
-
-        const valuesForCutPoints = litr.filter(obj =>
-            obj["Group"] == selectedlAgeGroup['value'] &&
-            obj["Age"] === selectedlAge['value'] &&
-            obj["Device"] === selectedlDevice['value'] &&
+        console.log(event)
+        const valuesForCutPoints = filtLit.filter(obj =>
             obj["Placement"] === event.value.toString()
         ).map(obj => JSON.stringify(obj["CutPoint"]));
 
         const cPointDic = convertArrayToOptions(valuesForCutPoints)
-        if (cPointDic.length === 1) {
-            handlesetSetpointsChange({ value: cPointDic[0].value, label: cPointDic[0].value })
-        }
-        else {
-            setSelectedCutPoints("");
-        }
-        setCutPointsOptions(cPointDic)
+        setFilter (event, 'Cup', convertArrayToOptions(cPointDic))
+
     }
 
     //Cut Point
-    const handlesetSetpointsChange = (event) => {
-        setSelectedCutPoints(event);
+    const handlesetSetpointsChange =  (event) => {
+        //setSelectedCutPoints(event);
         localStorage.setItem("cutpoints", JSON.stringify(event.value.toString()));
     }
 
@@ -378,7 +413,7 @@ export default function Activity({ parentChangeActiveTab, ...rest }) {
 
                             <Select id={"AgeGroup"}
                                 options={ageGroupOptions}
-                                value={selectedlAgeGroup}
+                                value={selectedAgeGroup}
                                 onChange={handleAgeGroupChange}
                                 className="listbox" />
 
@@ -396,7 +431,7 @@ export default function Activity({ parentChangeActiveTab, ...rest }) {
                             </li>
                             <Select id={"Age"}
                                 options={ageOptions}
-                                value={selectedlAge}
+                                value={selectedAge}
                                 onChange={handleAgeChange}
                                 className="listbox" />
                         </div>
@@ -458,7 +493,7 @@ export default function Activity({ parentChangeActiveTab, ...rest }) {
                                     border: '1px solid #73a7f0'
                                 }}
                                 options={cpointoptions}
-                                value={cpoint}
+                                value={setSelectedCutPoints}
                                 onChange={handlecutpointsChange}
                             />
                         </div>
