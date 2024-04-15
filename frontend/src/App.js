@@ -42,7 +42,7 @@ function setmemory(){
 }
 
   export default function App() {
-  const [activeTab, setActiveTab] = useState('');
+  const [activeTab, setActiveTab] = useState('file');
   
   function changeActiveTab (event) {
     setActiveTab(event)
