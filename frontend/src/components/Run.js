@@ -20,7 +20,7 @@ export default function Run() {
     const [endOfperiod, setEndOfPeriod] = useState();
     const [sel_per_1_value, setSelPer1Value] = useState();
     const [sel_per_2_value, setSelPer2Value] = useState();
-    const [max_num_days_value, setMaxNumDaysValue] = useState();
+    const [day_crit_value, setDayCritValue] = useState();
     const [analytical_window_value, setAnalyticalWindowValue] = useState();
     const [device_value, setDeviceValue] = useState();
     const [position_value, setPositionValue] = useState();
@@ -44,30 +44,35 @@ export default function Run() {
     function load_memory() {
         setInputFileValue(JSON.parse(localStorage.getItem('input_file_name')));
         setOutputFileValue(JSON.parse(localStorage.getItem('output_file_name')));
-        setWindows1Value(JSON.parse(localStorage.getItem('windows_1')));
-        setWindows2Value(JSON.parse(localStorage.getItem('windows_2')));
-        setWindows3Value(JSON.parse(localStorage.getItem('windows_3')));
-        setAutoCalibrationValue(JSON.parse(localStorage.getItem('auto_calib_stat')))
+        setWindows1Value(JSON.parse(localStorage.getItem('windows_1'))['value']);
+        setWindows2Value(JSON.parse(localStorage.getItem('windows_2'))['value']);
+        setWindows3Value(JSON.parse(localStorage.getItem('windows_3'))['value']);
+        setAutoCalibrationValue(localStorage.getItem('auto_calib_stat'));
         setPAICAValue(JSON.parse(localStorage.getItem('PAICA')));
         setProcChunkSizeValue(JSON.parse(localStorage.getItem('chunk_size')));
-        setAnalyticalStrategyValue(JSON.parse(localStorage.getItem('analytical_strategy')));
+        setAnalyticalStrategyValue(JSON.parse(localStorage.getItem('analytical_strategy'))['value']);
         setStartOfPeriod(JSON.parse(localStorage.getItem('start_per_day')));
         setEndOfPeriod(JSON.parse(localStorage.getItem('end_per_day')));
         setSelPer1Value(JSON.parse(localStorage.getItem('sel_per_1')));
         setSelPer2Value(JSON.parse(localStorage.getItem('sel_per_2')));
-        setMaxNumDaysValue(JSON.parse(localStorage.getItem('max_num_days')));
+        setDayCritValue(JSON.parse(localStorage.getItem('day_crit')));
         setAnalyticalWindowValue(JSON.parse(localStorage.getItem('analytical_window')));
-        setDeviceValue(JSON.parse(localStorage.getItem('device')));
-        setPositionValue(JSON.parse(localStorage.getItem('position')));
-        setAgeGroupValue(JSON.parse(localStorage.getItem('age_group')));
-        setCutPointsValue(JSON.parse(localStorage.getItem('cutpoints')));
-        setDetectionMetricValue(JSON.parse(localStorage.getItem('detection_metric')));
+        if (JSON.parse(localStorage.getItem('age_group')) != "")
+           setAgeGroupValue(JSON.parse(localStorage.getItem('age_group'))['value']);
+        if (JSON.parse(localStorage.getItem('device')) != "")
+            setDeviceValue(JSON.parse(localStorage.getItem('device'))[0]['value'])
+        if (JSON.parse(localStorage.getItem('position')) != "")
+            setPositionValue(JSON.parse(localStorage.getItem('position'))[0]['value']);
+        if (JSON.parse(localStorage.getItem('cutpoints')) != "")
+            setCutPointsValue(JSON.parse(localStorage.getItem('cutpoints'))[0]['value']);
+        if (JSON.parse(localStorage.getItem('detection_metric')) != "")
+            setDetectionMetricValue(JSON.parse(localStorage.getItem('detection_metric'))[0]['value'])
         setInterruptionRateValue(JSON.parse(localStorage.getItem('interruption_rate')));
         setMVPADurationValue(JSON.parse(localStorage.getItem('MVPA_duration')));
         setTimeThresholdValue(JSON.parse(localStorage.getItem('time_threshold')));
         setAngleThresholdValue(JSON.parse(localStorage.getItem('angle_threshold')));
-        setIgnoreNonWearTimeValue(JSON.parse(localStorage.getItem('ignore_non_wear_time')));
-
+        setIgnoreNonWearTimeValue(localStorage.getItem('ignore_non_wear_time'));
+        console.log(localStorage.getItem('ignore_non_wear_time'))
     }
     function changeActivityReport(event) {
         setActivityReport(activityreport => !activityreport)
@@ -103,7 +108,7 @@ export default function Run() {
             "endOfperiod":endOfperiod,
             "sel_per_1_value":sel_per_1_value,
             "sel_per_2_value":sel_per_2_value,
-            "max_num_days_value":max_num_days_value,
+            "day_crit":day_crit_value,
             "analytical_window_value":analytical_window_value,
             "device_value":device_value,
             "position_value":position_value,
@@ -186,20 +191,20 @@ export default function Run() {
                         <li style={{ listStyleType: 'disc' }}> Selection Periods_2---
                             <span style={{ color: 'dodgerblue', fontSize: '12pt' }}>{sel_per_2_value}</span>
                         </li>
-                        <li style={{ listStyleType: 'disc' }}> Maximum Number of Days---
-                            <span style={{ color: 'dodgerblue', fontSize: '12pt' }}>{max_num_days_value}</span>
+                        <li style={{ listStyleType: 'disc' }}> Day Crit---
+                            <span style={{ color: 'dodgerblue', fontSize: '12pt' }}>{day_crit_value}</span>
                         </li>
                         <li style={{ listStyleType: 'disc' }}> Analytical Window ---
                             <span style={{ color: 'dodgerblue', fontSize: '12pt' }}>{analytical_window_value}</span>
+                        </li>
+                        <li style={{ listStyleType: 'disc' }}> Age-group---
+                            <span style={{ color: 'dodgerblue', fontSize: '12pt' }}>{age_group_value}</span>
                         </li>
                         <li style={{ listStyleType: 'disc' }}> Device---
                             <span style={{ color: 'dodgerblue', fontSize: '12pt' }}>{device_value}</span>
                         </li>
                         <li style={{ listStyleType: 'disc' }}> Position---
                             <span style={{ color: 'dodgerblue', fontSize: '12pt' }}>{position_value}</span>
-                        </li>
-                        <li style={{ listStyleType: 'disc' }}> Age-group---
-                            <span style={{ color: 'dodgerblue', fontSize: '12pt' }}>{age_group_value}</span>
                         </li>
                         <li style={{ listStyleType: 'disc' }}> Cutpoints---
                             <span style={{ color: 'dodgerblue', fontSize: '12pt' }}>{cutpoints_value}</span>

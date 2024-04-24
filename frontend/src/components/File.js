@@ -95,9 +95,9 @@ export default function File({parentChangeActiveTab, ...rest}){
                 <br/>
                 <input type="text" style={{width: '40vh'}} defaultValue={shortName} onChange={upnamechangeHandler} />
                 <p style={{fontStyle: 'italic'}}>Stored Location : app_location/output/{outputfile}</p>
-                <div style={{ marginLeft:'80vh'}}>
-                      <a onClick={() =>parentChangeActiveTab("preprocessing")} style={{fontSize:20}}>  NEXT  {'\u27A1'}</a></div>
-            </div>
+                
+                <a style={{  display: 'flex' , paddingRight:'10px', justifyContent: 'flex-end',fontSize:20 }} onClick={() =>parentChangeActiveTab("preprocessing")} >  NEXT  {'\u27A1'}</a></div>
+
             <p>{file}</p>
 
         </div>

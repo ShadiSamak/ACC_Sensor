@@ -1,6 +1,6 @@
 import '../styles/ppro.css'
 import Select from 'react-select'
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import window from '../data/ppro.json'
 import { Tooltip } from '@chakra-ui/react'
 import CheckboxButtonSet from './CheckboxButtonSet'
@@ -48,7 +48,8 @@ const sliderMarks = [
     }
 ]
 
-export default function PPro({parentChangeActiveTab, ...rest}){
+export default function PPro({ parentChangeActiveTab, ...rest }) {
+
     const windowoptions = window.map(w => ({
         "window": w.window,
         "data": w.data,
@@ -56,59 +57,39 @@ export default function PPro({parentChangeActiveTab, ...rest}){
     }))
 
     // keeps the state for window1
-    const [selectedlWindow_1, setWindow_1] = useState();
-    const handleWindow1Change = (event) => {
-        setWindow_1(event);
-        localStorage.setItem("windows_1", JSON.stringify(event.value));
-    }
+    const [selectedlWindow_1, setWindow_1] = useState(0);
+    const handleWindow1Change = (event) => { setWindow_1(event); }
 
     // keeps the state for window2
-    const [selectedlWindow_2, setWindow_2] = useState();
-    const handleWindow2Change = (event) => {
-        setWindow_2(event);
-        localStorage.setItem("windows_2", JSON.stringify(event.value));
-    }
+    const [selectedlWindow_2, setWindow_2] = useState(0);
+    const handleWindow2Change = (event) => { setWindow_2(event); }
 
     // keeps the state for window3
-    const [selectedlWindow_3, setWindow_3] = useState();
-    const handleWindow3Change = (event) => {
-        setWindow_3(event);
-        localStorage.setItem("windows_3", JSON.stringify(event.value));
-    }
+    const [selectedlWindow_3, setWindow_3] = useState(0);
+    const handleWindow3Change = (event) => { setWindow_3(event); }
 
     // keeps the state for auto calibration
-    const [autocalibstat, setautocalibstat] = useState(true);
-    const handleautocalibChange = (event) => {
-        setautocalibstat(event.target.checked);
-        localStorage.setItem("auto_calib_stat", JSON.stringify(event.target.checked.toString()));
-        console.log(event.target.checked);
-    }
+    const [autocalibstat, setautocalibstat] = useState(false);
+    const handleautocalibChange = (event) => { setautocalibstat(event.target.checked); }
 
     // keeps the state for physical activity radio button group
-    const [phyActivity, setphyActivity] = useState();
-    const handlephyActivitychange = (event) => {
-        console.log(event.target.value)
-        setphyActivity(event.target.value);
-        localStorage.setItem("PAICA", JSON.stringify(event.target.value));
-        
-    }
+    const [phyActivity, setphyActivity] = useState("");
+    const handlephyActivitychange = (event) => { setphyActivity(event.target.value); }
 
     // keeps the value for the chunk size
     const [sliderVal, setSliderVal] = useState(1);
     const handlephyChunkSizechange = (value) => {
         setSliderVal(value);
-        localStorage.setItem("chunk_size", JSON.stringify(value));
+        
     }
 
-
-    function saveconfig() {
-        console.log("windows_1: "       + localStorage.getItem('windows_1'))
-        console.log("windows_2: "       + localStorage.getItem('windows_2'))
-        console.log("windows_3: "       + localStorage.getItem('windows_3'))
-        console.log("auto_calib_stat: " + localStorage.getItem('auto_calib_stat'))
-        console.log("chunk_size: "      + localStorage.getItem('chunk_size'))
-    }
-
+    useEffect(() => { localStorage.setItem('windows_1', JSON.stringify(selectedlWindow_1)); }, [selectedlWindow_1])
+    useEffect(() => { localStorage.setItem('windows_2', JSON.stringify(selectedlWindow_2)); }, [selectedlWindow_2])
+    useEffect(() => { localStorage.setItem('windows_3', JSON.stringify(selectedlWindow_3)); }, [selectedlWindow_3])
+    useEffect(() => { localStorage.setItem("auto_calib_stat", JSON.stringify(autocalibstat)); }, [autocalibstat])
+    useEffect(() => { localStorage.setItem("PAICA", JSON.stringify(phyActivity));}, [phyActivity])
+    useEffect(() => { localStorage.setItem("chunk_size", JSON.stringify(sliderVal));}, [sliderVal])
+    
     return (
         <div className="mainBlock">
             <br /><br />
@@ -229,7 +210,7 @@ export default function PPro({parentChangeActiveTab, ...rest}){
                             </td>
                             <td style={{ width: '40vh', paddingTop: "15pt" }}>
                                 <Slider
-                                    onChange={e => { handlephyChunkSizechange(e.target.value)}}
+                                    onChange={e => { handlephyChunkSizechange(e.target.value) }}
                                     defaultValue={1}
                                     aria-labelledby="discrete-slider-small-steps"
                                     step={0.1}
@@ -242,17 +223,21 @@ export default function PPro({parentChangeActiveTab, ...rest}){
                                 />
                             </td>
                         </tr>
-                        <div style={{ marginLeft:'95vh', marginTop:'10%'}}><a onClick={() =>parentChangeActiveTab("file")} style={{fontSize:20}}>  {'\u2B05'}   PREV  |</a>
-                      <a onClick={() =>parentChangeActiveTab("activity")} style={{fontSize:20}}>  NEXT  {'\u27A1'}</a></div>
+
+
                     </td>
-                    
                 </tr>
-                <tr>
-
-
-            </tr>
             </table>
+            <table className='pptable'>
+                <tr>
+                    <td style={{ width: '100%', height: '8vh', textAlign: 'right', verticalAlign: 'middle' }}>
+                        <div style={{ marginRight: '30px' }}>
+                            <a style={{ fontSize: 20 }} onClick={() => parentChangeActiveTab("file")} >  {'\u2B05'}   PREV  |</a>
+                            <a style={{ fontSize: 20 }} onClick={() => parentChangeActiveTab("activity")}>NEXT {'\u27A1'}</a></div>
+                    </td>
 
+                </tr>
+            </table>
         </div>
     )
 }
