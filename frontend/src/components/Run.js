@@ -132,7 +132,7 @@ export default function Run() {
 
         var config = {
                     method: 'post',
-                    url: 'http://localhost:8000/config',
+                    url: 'http://localhost:8080/config',
                     headers: { 
                         'Content-Type': 'application/json'
                     },

@@ -15,6 +15,10 @@ app = flask.Flask(__name__, static_url_path='',
 # CORS(app) #comment this on deployment
 # api = Api(app)
 
+@app.route("/test", methods={'GET'})
+def test():
+    return "Success!"
+    #return render_template('index.html')
 
 @app.route("/", defaults={'path': ''})
 def serve(path):
@@ -42,7 +46,10 @@ def upload_file():
 
 @app.route('/config', methods=['POST'])
 def config():
+    print("HEEERRREEEE")
     if request.method == 'POST':
+        print("HEEERRREEEE")
+
         MVPA_duration_value = "0"
         PAICA_value = "0"
         activityreport = False
