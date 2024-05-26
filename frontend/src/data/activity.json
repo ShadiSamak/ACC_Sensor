@@ -48,5 +48,12 @@
             { "value": "5", "label": "5" },
             { "value": "10", "label": "10" }
         ] 
+    },
+    {
+        "window": "TimeWindow",
+        "vals": [
+            { "value": "MM", "label": "MM" },
+            { "value": "WW", "label": "WW" }
+        ]
     }
 ]

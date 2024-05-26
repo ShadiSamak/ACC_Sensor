@@ -31,8 +31,12 @@
 }
 
 .listboxsmall{
-    width: 30%;
+    width: 15%;
     margin-left: 10px;
+}
+
+.listboxmed{
+    width: 25%;
 }
 
 .listboxset{

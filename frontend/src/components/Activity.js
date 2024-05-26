@@ -23,11 +23,11 @@ export default function Activity({ parentChangeActiveTab, ...rest }) {
     function convertDictToOptions(dict) {
         const dropdownValues = [];
         dict.forEach(item => {
-            dropdownValues.push("Light:"+item['Light']+
-                                ", Moderate:"+ item['Moderate']+
-                                ", Vigorous:"+ item['Vigorous'])
-        }); 
-        
+            dropdownValues.push("Light:" + item['Light'] +
+                ", Moderate:" + item['Moderate'] +
+                ", Vigorous:" + item['Vigorous'])
+        });
+
         return dropdownValues.map((item, index) => ({
             value: `${item}`,
             label: `${item}`,
@@ -35,23 +35,23 @@ export default function Activity({ parentChangeActiveTab, ...rest }) {
     }
 
     // Sleep Analysis
-    const [sleepAnalysis, setSleepAnalysis]= useState(false)
+    const [sleepAnalysis, setSleepAnalysis] = useState(false)
     // Start & End valus
     const [start, setStart] = useState(0);
     const [end, setEnd] = useState(0);
 
     // Slider    
     const [sliderVal, setSliderVal] = useState(0.7);
-    
+
     // Slider Time_Period_1
     const [timePeriod1, settimePeriod1] = useState(0);
-    
+
     // Slider Time_Period_2
     const [timePeriod2, settimePeriod2] = useState(0);
 
     // Slider Day Crit
     const [dayCrit, setDayCrit] = useState(0);
-    
+
     // Slider Analytical Window
     const [alWindow, setalWindow] = useState([8, 16]);
 
@@ -105,11 +105,12 @@ export default function Activity({ parentChangeActiveTab, ...rest }) {
 
         //Detection Metric
         setDetMetricOptions(convertArrayToOptions(litr.map(obj => JSON.stringify(obj["Arguments_acc_metric"]))))
+
     }, []);
 
-    
+
     // Event Handlers
-    const setFilter = async (event, item) => {     
+    const setFilter = async (event, item) => {
         if (item === 'AgeGroup')
             setfiltLit(litr.filter(obj => obj["Group"] === event.value.toString()));
 
@@ -122,23 +123,21 @@ export default function Activity({ parentChangeActiveTab, ...rest }) {
         if (item === 'Pos')
             setfiltLit(filtLit.filter(obj => obj["Placement"] === event.value.toString()));
 
-        if (item ==='Cup')
+        if (item === 'Cup')
             console.log(filtLit)
-            //setfiltLit(filtLit.filter(obj => obj["CutPoint"] === event.value.toString()));
-        if (item ==='DMet')
+        //setfiltLit(filtLit.filter(obj => obj["CutPoint"] === event.value.toString()));
+        if (item === 'DMet')
             //console.log(filtLit)
             setfiltLit(filtLit.filter(obj => obj["Arguments_acc_metric"] === event.value.toString()));
 
     };
 
     useEffect(() => {
-        console.log(filtLit)
         const ages = Array.from(new Set(filtLit.map(item => item.Age)))
         const devices = Array.from(new Set(filtLit.map(item => item.Device)))
         const positions = Array.from(new Set(filtLit.map(item => item.Placement)))
         const cutpoints = Array.from(new Set(filtLit.map(item => item.CutPoint)))
         const detmetric = Array.from(new Set(filtLit.map(item => item.Arguments_acc_metric)))
-        console.log(detmetric)
 
         setAgeOptions(convertArrayToOptions(ages))
         setDeviceOptions(convertArrayToOptions(devices))
@@ -146,31 +145,31 @@ export default function Activity({ parentChangeActiveTab, ...rest }) {
         setCutPointsOptions(convertDictToOptions(cutpoints))
         setDetMetricOptions(convertArrayToOptions(detmetric))
 
-        if (ages.length === 1 )
-            setSelectedAge (convertArrayToOptions(ages))
+        if (ages.length === 1)
+            setSelectedAge(convertArrayToOptions(ages))
         else
-            setSelectedAge ("")
-        
-        if (devices.length === 1 )
-            setDevice (convertArrayToOptions(devices))
+            setSelectedAge("")
+
+        if (devices.length === 1)
+            setDevice(convertArrayToOptions(devices))
         else
-            setDevice ("")
-        
-        if (positions.length === 1 )
-            setPosition (convertArrayToOptions(positions))
+            setDevice("")
+
+        if (positions.length === 1)
+            setPosition(convertArrayToOptions(positions))
         else
-            setPosition ("")
-        
-        if (cutpoints.length === 1 )
-            setSelectedCutPoints (convertDictToOptions(cutpoints))
+            setPosition("")
+
+        if (cutpoints.length === 1)
+            setSelectedCutPoints(convertDictToOptions(cutpoints))
         else
-            setSelectedCutPoints ("")
-        
-        if (detmetric.length === 1 )
-            setSelectedDetMetric (convertArrayToOptions(detmetric))
+            setSelectedCutPoints("")
+
+        if (detmetric.length === 1)
+            setSelectedDetMetric(convertArrayToOptions(detmetric))
         else
-            setSelectedDetMetric ("")
-           
+            setSelectedDetMetric("")
+
 
     }, [filtLit]);
 
@@ -198,23 +197,23 @@ export default function Activity({ parentChangeActiveTab, ...rest }) {
     }
 
     // Age-Group
-    const handleAgeGroupChange =  async (event) => {
-        setAgeGroup (event)
+    const handleAgeGroupChange = async (event) => {
+        setAgeGroup(event)
         // changes the age list accordingly
         const valuesForAge = litr.filter(obj => obj["Group"] === event.value.toString()).map(obj => obj["Age"]);
-        setFilter (event, 'AgeGroup', convertArrayToOptions(valuesForAge))
+        setFilter(event, 'AgeGroup', convertArrayToOptions(valuesForAge))
     }
 
     // Age
-    const handleAgeChange =  (event) => {
+    const handleAgeChange = (event) => {
         setSelectedAge(event);
         // changes the device list accordingly
         const valuesForDevice = filtLit.filter(obj => obj["Age"] === event.value.toString()).map(obj => obj["Device"]);
-        setFilter (event, 'Age', convertArrayToOptions(valuesForDevice))
+        setFilter(event, 'Age', convertArrayToOptions(valuesForDevice))
     }
 
     // Device
-    const handleDeviceChange =  (event) => {
+    const handleDeviceChange = (event) => {
         const valuesForPosition = filtLit.filter(obj =>
             obj["Group"] == selectedAgeGroup['value'] &&
             obj["Age"] === selectedAge['value'] &&
@@ -222,49 +221,49 @@ export default function Activity({ parentChangeActiveTab, ...rest }) {
         ).map(obj => obj["Placement"]);
 
         const posDic = convertArrayToOptions(valuesForPosition)
-        setFilter (event, 'Dev', convertArrayToOptions(posDic))
+        setFilter(event, 'Dev', convertArrayToOptions(posDic))
     }
 
     // Position
-    const handlePositionChange =  (event) => {
-        
+    const handlePositionChange = (event) => {
+
         const valuesForCutPoints = filtLit.filter(obj =>
             obj["Placement"] === event.value.toString()
         ).map(obj => JSON.stringify(obj["CutPoint"]));
 
         const cPointDic = convertArrayToOptions(valuesForCutPoints)
-        setFilter (event, 'Pos', convertArrayToOptions(cPointDic))
+        setFilter(event, 'Pos', convertArrayToOptions(cPointDic))
 
     }
 
     //Cut Point
-    const handlesetSetpointsChange =  (event) => {
+    const handlesetSetpointsChange = (event) => {
         console.log(event.value)
 
         const valuesForDetectMetric = filtLit.filter(obj =>
             obj["Placement"] === event.value.toString()
         ).map(obj => JSON.stringify(obj["Arguments_acc_metric"]));
-        
+
 
         const dTectionMetricDic = convertArrayToOptions(valuesForDetectMetric)
-        setFilter (event, 'DMet', convertArrayToOptions(dTectionMetricDic))
+        setFilter(event, 'DMet', convertArrayToOptions(dTectionMetricDic))
 
     }
 
     // Detection Metric
     const handleDetMetricChange = (event) => {
         //setcpoints(event);
-        
+
     }
 
     // Handle Sleep Analysis
-    const handleSleepAnalysisChange =(event)=>{
-        setSleepAnalysis(event.target.checked);       
+    const handleSleepAnalysisChange = (event) => {
+        setSleepAnalysis(event.target.checked);
     }
 
     // Start & End valus
     const startfunc = (value) => { setStart(value); }
-    const endfunc = (value) => { setEnd(value);    }
+    const endfunc = (value) => { setEnd(value); }
 
     // Slider    
     const sliderMarks = [{ value: 0.2, label: '0.2', }, { value: 1, label: '1', }]
@@ -281,33 +280,63 @@ export default function Activity({ parentChangeActiveTab, ...rest }) {
     const dayCritChange = (event, newValue) => { setDayCrit(newValue); };
 
     // Slider Analytical Window
-    const alWindowchange = (event, newValue) => { setalWindow(newValue);};
+    const alWindowchange = (event, newValue) => { setalWindow(newValue); };
 
     // MVPA
     const mvpa = data.filter(x => x.window.includes("MVPA"))
-    const [selectedlMVPA, setMvpa] = useState();
-    const handleMVPAChange = (event) => {
-        setMvpa(event);
-        localStorage.setItem("MVPA_duration", JSON.stringify(event.value.toString()));
 
+    const [selectedlMVP1, setMvpa1] = useState({ value: '1', label: '1' });
+    const [selectedlMVPA2, setMvpa2] = useState({ value: '5', label: '5' });
+    const [selectedlMVPA3, setMvpa3] = useState({ value: '10', label: '10' });
+
+    const handleMVPA1Change = (event) => {
+        setMvpa1(event);
+        localStorage.setItem("MVPA1_duration", JSON.stringify(event.value.toString()));
     }
-
+    const handleMVPA2Change = (event) => {
+        setMvpa2(event);
+        localStorage.setItem("MVPA2_duration", JSON.stringify(event.value.toString()));
+    }
+    const handleMVPA3Change = (event) => {
+        setMvpa3(event);
+        localStorage.setItem("MVPA3_duration", JSON.stringify(event.value.toString()));
+    }
+    // Time Window
+    const [selectedlTWindow, setTwindow] = useState();
+    const TimeWindow = data.filter(x => x.window.includes("TimeWindow"))
+    const handleTwinChange = (event) => {
+        setTwindow(event);
+        localStorage.setItem("MVPA3_duration", JSON.stringify(event.value.toString()));
+    }
     return (
         <>
             <table style={{ marginLeft: '5vh' }}>
                 <tr>
-                <td style={{ width: '10vh' }} >
+                    <td style={{ width: '22vh' }} >
                         <li style={{ listStyleType: 'disc' }}>
-
                             <span style={{ fontSize: '15pt' }}> Sleep Analysis</span>
                             <Switch
-                            checked={sleepAnalysis}
-                            onChange={handleSleepAnalysisChange}
-                            inputProps={{ 'aria-label': 'controlled' }}
+                                checked={sleepAnalysis}
+                                onChange={handleSleepAnalysisChange}
+                                inputProps={{ 'aria-label': 'controlled' }}
                             />
                         </li>
-                     </td>
+                    </td>
+                </tr>
+                <tr>
+                    <td style={{ width: '22vh' }} >
+                        <li style={{ listStyleType: 'disc' }}>
+                            <span style={{ fontSize: '15pt' }}> Time Window</span>
+                        </li>
 
+                    </td>
+                    <td>
+                        <Select id={"Twin"}
+                            value={selectedlTWindow}
+                            options={TimeWindow[0].vals}
+                            onChange={handleTwinChange}
+                            className="listboxmed" />
+                    </td>
                 </tr>
                 <tr>
                     <td style={{ width: '10vh' }} >
@@ -331,7 +360,7 @@ export default function Activity({ parentChangeActiveTab, ...rest }) {
                             isOptionDisabled={(option) => option.disabled}
                             value={analyticalstrategy}
                             onChange={handleAnalyticalStrategy}
-                            className="listboxsmall" />
+                            className="listboxmed" />
                     </td>
                     <td style={{ width: '40vh' }} >
                         <div className='startendbox' >
@@ -424,7 +453,7 @@ export default function Activity({ parentChangeActiveTab, ...rest }) {
             <table style={{ marginLeft: '5vh', textAlign: 'left' }}>
                 <tr>
                     <td style={{ width: '28%' }}>
-                        <div className= "listboxsetmid">
+                        <div className="listboxsetmid">
                             <li style={{ listStyleType: 'disc' }}>
                                 <span style={{ fontSize: '15pt' }}> Age-group</span>
                             </li>
@@ -488,7 +517,7 @@ export default function Activity({ parentChangeActiveTab, ...rest }) {
             <br />
             <table style={{ marginLeft: '5vh' }}>
                 <tr>
-                    <td style={{ width: '50%'}}>
+                    <td style={{ width: '50%' }}>
                         <div className="listboxsetlong">
                             <li style={{ listStyleType: 'disc', width: '15vh' }}>
                                 <span style={{ fontSize: '15pt' }}> Cutpoints</span></li>
@@ -500,7 +529,7 @@ export default function Activity({ parentChangeActiveTab, ...rest }) {
                         </div>
                     </td>
                     <td style={{ width: '50%' }}>
-                        <div style={{marginLeft:'8vh'}} className="listboxsetmid">
+                        <div style={{ marginLeft: '8vh' }} className="listboxsetmid">
                             <li style={{ listStyleType: 'disc', width: '20vh' }}>
                                 <span style={{ fontSize: '15pt' }}> Detection metric</span></li>
                             <Select id={"detection_metric"}
@@ -553,15 +582,28 @@ export default function Activity({ parentChangeActiveTab, ...rest }) {
                         </div>
                     </td>
 
-                    <td style={{ width: '40vh' }} >
+                    <td style={{ width: '50%' }} >
                         <div style={{ display: 'flex', marginLeft: '5vh', textAlign: 'top' }}>
-                            <li style={{ listStyleType: 'circle' }}>
+                            <li style={{ listStyleType: 'circle', width: '30%' }}>
                                 <span style={{ fontSize: '15pt' }}> MVPA duration</span>
                             </li>
-                            <Select id={"MVPA"}
-                                options={mvpa[0].vals}
-                                value={selectedlMVPA}
-                                onChange={handleMVPAChange}
+                            <Select id={"MVPA1"}
+
+                                value={selectedlMVP1}
+                                isMulti={false}
+                                onChange={handleMVPA1Change}
+                                className="listboxsmall" />
+                            <Select id={"MVPA2"}
+
+                                value={selectedlMVPA2}
+                                isMulti={false}
+                                onChange={handleMVPA2Change}
+                                className="listboxsmall" />
+                            <Select id={"MVPA3"}
+
+                                value={selectedlMVPA3}
+                                isMulti={false}
+                                onChange={handleMVPA3Change}
                                 className="listboxsmall" />
                         </div>
                     </td>
@@ -569,50 +611,12 @@ export default function Activity({ parentChangeActiveTab, ...rest }) {
             </table>
             <>
 
-                <td style={{ width: '115vh', height: '8vh', textAlign: 'right', verticalAlign: 'middle' }}>
+                <td style={{ width: '135vh', height: '8vh', textAlign: 'right', verticalAlign: 'middle' }}>
 
                     <div style={{ marginLeft: '15vh' }}><a onClick={() => parentChangeActiveTab("preprocessing")} style={{ fontSize: 20 }}>  {'\u2B05'}   PREV  |</a>
                         <a onClick={() => parentChangeActiveTab("sleep")} style={{ fontSize: 20 }}>  NEXT  {'\u27A1'}</a></div>
-
-
                 </td>
-
-
             </>
         </>
     )
 }
-
-
-/*
-
-                <tr>
-                    <td style={{ textAlign: 'right' }}><p style={{ fontSize: '10pt' }}>- Maximum Number of Days</p>
-                    </td>
-                    <td >
-                        <Slider
-                            style={{ width: '80%' }}
-                            onChange={maxNumDayschange}
-                            defaultValue={3}
-                            aria-labelledby="Max Num Days"
-                            min={0}
-                            max={8}
-                            valueLabelDisplay="auto"
-                            size="medium"
-                            aria-label="Small"
-                            marks={maxNumrMarks} />
-                    </td>
-
-                </tr>
-
-
-
-
-
-                                    <td>
-                        <li style={{ marginLeft: '5vh', listStyleType: 'disc', textAlign: 'left' }}>
-                            <span style={{ fontSize: '15pt' }}> Bouts</span>
-                        </li>
-                    </td>
-
-*/

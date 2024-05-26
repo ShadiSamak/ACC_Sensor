@@ -183,7 +183,7 @@ export default function PPro({ parentChangeActiveTab, ...rest }) {
                                 <li style={{ listStyleType: 'square' }}>Physical Activity Intensity Calculation Algorithm:</li>
                             </td>
                             <td >
-                                <CheckboxButtonSet change={handlephyActivitychange} radioitems={['ENMO', 'MAD', 'HFEN', 'EN', 'ActiLife']} />
+                                <CheckboxButtonSet change={handlephyActivitychange} radioitems={['ENMO', 'MAD', 'HFEN', 'EN', 'ActiLife(Neishabouri)']} />
                             </td>
                         </tr>
                         <br />

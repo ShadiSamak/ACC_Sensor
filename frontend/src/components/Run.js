@@ -36,6 +36,7 @@ export default function Run() {
     const [sleepreport, setSleepReport] = useState(false);
     const [visualisation, setVisualisation] = useState(false);
     const [epochlevel, setEpochLevel] = useState(false);
+    const [overwrite, setoverwrite] = useState(false);
 
     useEffect(() => {
         load_memory();
@@ -90,6 +91,10 @@ export default function Run() {
 
     function changeEpochLevel() {
         setEpochLevel(epochlevel => !epochlevel)
+    }
+
+    function changeOverwrite(){
+        setoverwrite(overwrite => !overwrite)
     }
 
     function sendConfig(){
@@ -266,6 +271,14 @@ export default function Run() {
                             </td>
                             <td>
                                 <Switch onChange={changeEpochLevel} color="primary" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style={{ display: "flex", justifyContent: "right" }}>
+                                <p style={{ marginTop: "10px" }}>Overwrite</p>
+                            </td>
+                            <td>
+                                <Switch onChange={changeOverwrite} color="primary" />
                             </td>
                         </tr>
                         <tr>
