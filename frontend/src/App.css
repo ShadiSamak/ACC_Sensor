@@ -22,7 +22,7 @@
 @media screen and (min-width: 768px) {
   .sdp {
     --sdp-width: 90%;
-    --sdp-height: 90%;
+    --sdp-height: 92%;
     --sdp-margin-top: 4%;
     --sdp-margin-left: 5%;
   }

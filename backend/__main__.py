@@ -1,5 +1,7 @@
 import flask
 from flask import Flask, request, send_from_directory, send_file
+from flask_cors import CORS
+import json
 import os
 # app = flask.Flask(__name__)
 # path = "frontend"
@@ -12,7 +14,8 @@ import os
 
 app = flask.Flask(__name__, static_url_path='',
                   static_folder='../frontend/build')
-# CORS(app) #comment this on deployment
+#comment this on deployment
+CORS(app, origins=['http://localhost:3000'])
 # api = Api(app)
 
 @app.route("/test", methods={'GET'})
@@ -45,123 +48,155 @@ def upload_file():
 
 
 @app.route('/config', methods=['POST'])
-def config():
-    print("HEEERRREEEE")
+def config():   
+    data={}
     if request.method == 'POST':
-        print("HEEERRREEEE")
-
-        MVPA_duration_value = "0"
-        PAICA_value = "0"
-        activityreport = False
-        age_group_value = "0"
-        analytical_strategy_value = "0"
-        analytical_window_value = "0"
-        angle_threshold_value = "0"
-        do_angle = True if angle_threshold_value != None else False
-        auto_calibration_value = "0"
-        cutpoints_value = "0"
-        detection_metric_value = "0"
-        device_value = "0"
-        endOfperiod = "0"
-        epochlevel = False
-        ignore_non_wear_time_value = "0"
-        interruption_rate_value = "0"
-        max_num_days_value = "0"
-        position_value = "0"
-        proc_chunk_size_value = "0"
-        sel_per_1_value = "0"
-        sel_per_2_value = "0"
-        sleepreport = False
-        startofperiod = "0"
-        time_threshold_value = "0"
-        visualisation = False
-        windows1_value = "600"
-        windows2_value = "700"
-        windows3_value = "800"
-        with open('output/rScript.R', 'w') as f:
+        data = request.data.decode('utf-8') 
+        data_json = json.loads(data)
+        day_night_value = data_json["day_night"]
+        time_zone_value = data_json["time_zone"]
+        input_file_name = data_json['input_file_name']
+        output_file_name =data_json['output_file_name']
+        windows1_value = 5 if (data_json['windows1_value']=="0" or data_json['windows1_value']=="") else data_json['windows1_value']
+        windows2_value = 9 if (data_json['windows2_value']=="0" or data_json['windows2_value']=="") else data_json['windows2_value']
+        windows3_value = 3600 if (data_json['windows3_value']=="0" or data_json['windows3_value']=="") else data_json['windows3_value']
+        auto_calibration_value =data_json['auto_calibration_value']
+        pa_enmo_value =data_json['pa_enmo'].upper()
+        pa_enmo_value =data_json['pa_enmo'].upper()
+        pa_mad_value =data_json['pa_mad'].upper()
+        pa_hfen_value =data_json['pa_hfen'].upper()
+        pa_en_value =data_json['pa_en'].upper()
+        pa_actilife_value =data_json['pa_actilife'].upper()
+        proc_chunk_size_value =data_json['proc_chunk_size_value']
+        sleep_analysis_value =data_json['sleep_analysis_value']
+        time_window_value =data_json['time_window_value'] if data_json['time_window_value'] != "" else "MM"
+        analytical_strategy_value =data_json['analytical_strategy_value']
+        startofperiod =data_json['startofperiod']
+        endOfperiod =data_json['endOfperiod']
+        sel_per_1_value =data_json['sel_per_1_value']
+        sel_per_2_value =data_json['sel_per_2_value']
+        day_crit_value =data_json['day_crit']
+        analytical_window_value =data_json['analytical_window_value']
+        device_value =data_json['device_value']
+        position_value =data_json['position_value']
+        age_group_value =data_json['age_group_value']
+        cutpoints_value =data_json['cutpoints_value']
+        detection_metric_value =data_json['detection_metric_value']
+        boutTolInaAct_value= int(data_json['bout_tollorance_inactive'])
+        boutTolLimAct_value= int(data_json['bout_tollorance_lowactive'])
+        boutTolMVPA_value=int(data_json['bout_tollorance_mvpa'])
+        durInaAct1_value=int(data_json['duration_inactive1'])
+        durInaAct2_value=int(data_json['duration_inactive2'])
+        durInaAct3_value=int(data_json['duration_inactive3'])
+        durLimAct1_value=int(data_json['duration_lowactive1'])
+        durLimAct2_value=int(data_json['duration_lowactive2'])
+        durMVPA1_value=int(data_json['duration_mvpa1'])
+        durMVPA2_value=int(data_json['duration_mvpa2'])
+        time_threshold_value=data_json['time_threshold_value']
+        angle_threshold_value =data_json['angle_threshold_value']
+        hasib_value = data_json['hasib']
+        ignore_non_wear_time_value =data_json['ignore_non_wear_time_value']
+        activityreport =data_json['activityreport']
+        sleepreport =data_json['sleepreport']
+        visualisation =data_json['visualisation']
+        epochlevel =data_json['epochlevel']
+        overwrite = data_json['overwrite']
+        
+        ## Additional conditions
+        day_night_value_con = "c(1,2,3,4,5)" if day_night_value == 24 else "c(1,2,5)"
+        output_path = "output/"+output_file_name+".R"
+        
+        with open(output_path, 'w') as f:
             rScript = f"""
 library(GGIR)
 GGIR(
-    mode=c(1,2,3,4,5), // 24h = 12345 , day= 125
-    datadir="H:/My Documents/GGIR processing data",
-    outputdir="H:/My Documents/GGIR results",               
-    do.imp=TRUE,//--
-    idloc=2, //--
-    print.filename= TRUE,//--
-    desiredtz = "AEST",//combobox to show cities linked to json  , format to cange Africa/Accra
-    overwrite=TRUE, // toggle button in Run menu with notes "Only change the default value if you are familiar with this setting"
-    storefolderstructure=TRUE,//--
-    windowsizes = c({windows1_value},{windows2_value},{windows3_value}),// Default -> 5, 900, 3600
+    mode={day_night_value_con},
+    datadir="{input_file_name}",
+    outputdir="{output_file_name}",               
+    do.imp=TRUE,
+    idloc=2,
+    print.filename= TRUE,
+    desiredtz = "{time_zone_value}",
+    overwrite="{overwrite}",
+    storefolderstructure=TRUE,
+    windowsizes = c({windows1_value},{windows2_value},{windows3_value}),
     do.cal = {auto_calibration_value}, 
-    do.anglez={do_angle},// default value = 5
-    do.enmo=TRUE, // change to multiple choice on Pre-Processing
-    do.mad=FALSE,// change to multiple choice on Pre-Processing
-    do.hfen=FALSE,// change to multiple choice on Pre-Processing
-    do.en=FALSE,// change to multiple choice on Pre-Processing
-                //Other change to ActiLife  --> in the code do.neishabouricounts = TRUE/F
-    chunksize={proc_chunk_size_value},//no one would change this. the default is = 1 -> 
-                    Numeric (default = 1). Value between 0.2 and 1 to specificy the size of chunks to be loaded as a fraction of a 12 hour period, 
-                    e.g., 0.5 equals 6 hour chunks, 1 equals 12 hour chunks. For machines with less than 4Gb of RAM memory a value below 1 is 
-                    recommended.
-    print.summary=TRUE, //--
-    *   strategy = 2, // strategy 1-> Select DB of start and end Strategy 2-> Midnight - midnight --> below time selection to be deactivated for strategy 2
-    *   hrs.del.start = 0, // hours afrer midnight to start
-    *   hrs.del.end = 0, // hours before the next midnight
-    *   maxdur = 8,   // default is 0 and remove max_number of days slider  
+    do.anglez=5,
+    do.enmo={pa_enmo_value},
+    do.mad={pa_mad_value},
+    do.hfen={pa_hfen_value},
+    do.en={pa_en_value},
+    do.neishabouricounts = {pa_actilife_value},
+    chunksize={proc_chunk_size_value},
+    print.summary=TRUE,
+    strategy = {analytical_strategy_value},
+    hrs.del.start = {sel_per_1_value}
+    hrs.del.end = {sel_per_2_value}
+    maxdur = 0,
+    includedaycrit = {day_crit_value},
+    qwindow=c({analytical_window_value[0]},{analytical_window_value[1]}),
+    
+    mvpathreshold =c({cutpoints_value[0]}, {cutpoints_value[1]}, {cutpoints_value[2]}),
+    mvpadur = c({durInaAct1_value},{durInaAct2_value},{durInaAct3_value}),
 
-    *   includedaycrit = 8,      //How many hours should the device be worn to consider  rename max_num_of_days rename to this and selection 0-24 hours one slider
-    *   qwindow=c(0,24),  // remove Selection period 2 and add it here for multiple analytical window, default it 0-24
+    bout.metric = 6,
+    boutcriter.mvpa = c({boutTolInaAct_value}),
+    closedbout=FALSE,
+    M5L5res = 10,
+    winhr = c(1,5),
+    ilevels = c(0, 50, 100, 150, 200, 250, 300, 350, 700, 8000),
+    excludefirstlast = TRUE,
+    includenightcrit = 16,
+    iglevels = TRUE,
+    MX.ig.min.dur = 1,
+    qlevels = c( 960/1440, 1320/1440, 1380/1440, 1410/1440, 1425/1440, 1435/1440),
     
-    mvpathreshold =c(63.3, 142.6, 464.6),      // cut points -> refere to video
-    mvpadur = c(1,5,10), // MVPA Duration -> options multiple text 1,5,10
+    timetreshold={time_threshold_value},
+    anglethreshold={angle_threshold_value},
+    ignorenonwear={ignore_non_wear_time_value}, 
+    HASIB.algo = {hasib_value},
+    def.noc.sleep = 1, 
+    outliers.only = FALSE,
+    criterror = 4,
+    do.visual = TRUE,
+    threshold.lig = c({cutpoints_value[0]}),
+    threshold.mod = c({cutpoints_value[1]}),
+    threshold.vig = c({cutpoints_value[2]}),
+    boutcriter = {boutTolInaAct_value},
+    boutcriter.in = {boutTolLimAct_value},
+    boutcriter.lig = {boutTolMVPA_value},
 
+    boutdur.in = c({durInaAct1_value},{durInaAct2_value},{durInaAct3_value}),
+    boutdur.lig = c({durLimAct1_value},{durLimAct2_value}),
+    boutdur.mvpa = c({durMVPA1_value},{durMVPA2_value}),
 
-    bout.metric = 6, // remove the dropdown
-    boutcriter.mvpa = c(0.8), // inptruption rate -> change to bout tollorance -> 0 to 1 -> default 0.8
-    closedbout=FALSE,// 
-    M5L5res = 10,// 
-    winhr = c(1,5),//
-    ilevels = c(0, 50, 100, 150, 200, 250, 300, 350, 700, 8000),//
-    excludefirstlast = TRUE, //
-    includenightcrit = 16, // how many hours do we need ...? require a slider
-    iglevels = TRUE,//
-    MX.ig.min.dur = 1,//
-    qlevels = c( 960/1440, 1320/1440, 1380/1440, 1410/1440, 1425/1440, 1435/1440), //
-    
-    
-    
-    timetreshold={time_threshold_value}, //default = 5
-    anglethreshold={angle_threshold_value},//default = 5
-    ignorenonwear=TRUE, // leave as default remove the togle
-    HASIB.algo = ,// combo box -> “vanHees2015”/“Sadeh1994”/“ColeKripke1992”/“Galland2012” 
-    def.noc.sleep = 1, //
-    outliers.only = FALSE,//
-    criterror = 4, //
-    do.visual = TRUE,//
-    threshold.lig = c(63.3), // get the number from cutpoint
-    threshold.mod = c(142.6),  // get the number from cutpoint
-    threshold.vig = c(464.6),// get the number from cutpoint
-    boutcriter = 0.8,// get from  boutcriter.mvpa
-    boutcriter.in = 1.0,//get from  boutcriter.mvpa
-    boutcriter.lig = 0.8,//get from  boutcriter.mvpa
-    boutdur.in = c(5,10,30),//mvpadur
-    boutdur.lig = c(1,5),//mvpadur
-    boutdur.mvpa = c(1,5),//mvpadur
-    timewindow = c("MM"),// MM (midnight to midnight) / WW (waking to waking)
-    includedaycrit.part5 = 2/3,//includedaycrit
-    frag.metrics="all", // TRUE/FALSE advanced matrix in RUN
-    part5_agg2_60seconds=TRUE,//
-    do.report=c(2,5),//
+    timewindow = c("{time_window_value}"),
+    includedaycrit.part5 = 2/3,
+    frag.metrics="all", 
+    part5_agg2_60seconds=TRUE,
+    do.report=c(2,5),
     visualreport={visualisation},
     dofirstpage=TRUE,
     epochvalues2csv=TRUE,
-    viewingwindow=1//
+    viewingwindow=1
     )
     """
             f.write(rScript)
 
-        return send_file('output/rScript.R')
+        return send_file(output_path)
 
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0',port=8080)
+
+
+####
+#    HASIB.algo = ,// combo box -> “vanHees2015”/“Sadeh1994”/“ColeKripke1992”/“Galland2012”/"NotWorn"
+
+        # mode="{day_night_value_con}",//should it be based on sleep analysis or day/night
+        #chunksize=1,//no one would change this. the default is = 1 ->  Numeric (default = 1). Value between 0.2 and 1 to specificy the size of chunks to be loaded as a fraction of a 12 hour period,  e.g., 0.5 equals 6 hour chunks, 1 equals 12 hour chunks. For machines with less than 4Gb of RAM memory a value below 1 is recommended.
+        # strategy = {analytical_strategy_value}, // strategy 1-> Select DB of start and end Strategy 2-> Midnight - midnight --> below time selection to be deactivated for strategy 2
+        # includenightcrit = 16, // how many hours do we need ...? require a slider
+
+
+       # , border: '1px solid black', borderCollapse: 'collapse' 

@@ -35,10 +35,17 @@
     margin-left: 10px;
 }
 
+.listboxsmallMed{
+    width: 20%;
+    margin-left: 10px;
+}
+
 .listboxmed{
     width: 25%;
 }
-
+.listboxlrg{
+    width: 50%;
+}
 .listboxset{
     display: flex !important ;
     width: 25vh;

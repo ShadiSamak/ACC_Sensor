@@ -36,12 +36,15 @@ export default function Activity({ parentChangeActiveTab, ...rest }) {
 
     // Sleep Analysis
     const [sleepAnalysis, setSleepAnalysis] = useState(false)
+    const handleSleepAnalysisChange = (event) => { setSleepAnalysis(event.target.checked); }
+
+    // Time Window
+    const [selectedlTWindow, setTwindow] = useState("");
+
     // Start & End valus
     const [start, setStart] = useState(0);
     const [end, setEnd] = useState(0);
 
-    // Slider    
-    const [sliderVal, setSliderVal] = useState(0.7);
 
     // Slider Time_Period_1
     const [timePeriod1, settimePeriod1] = useState(0);
@@ -87,6 +90,27 @@ export default function Activity({ parentChangeActiveTab, ...rest }) {
     const [detMetricOptions, setDetMetricOptions] = useState([]);
     const [selectedDetMetric, setSelectedDetMetric] = useState("");
 
+    // Boud Tollorance
+    const [boutTolSliderInaActVal, setBoutTolSliderInaActtVal] = useState(0.8);
+    const [boutTolsliderLimActVal, setBoutTolsliderLimActVal] = useState(0.8);
+    const [boutTolsliderMVPAVal, setBoutTolsliderMVPAVal] = useState(0.8);
+
+    // Duration
+    const durOptions = [
+        { value: '1', label: '1' },
+        { value: '5', label: '5' },
+        { value: '10', label: '10' },
+        { value: '30', label: '30' }]
+
+    const [durInaAct1, setDurInaAct1] = useState({ value: '1', label: '1' });
+    const [durInaAct2, setDurInaAct2] = useState({ value: '5', label: '5' });
+    const [durInaAct3, setDurInaAct3] = useState({ value: '10', label: '10' });
+    const [durLimAct1, setDurLimAct1] = useState({ value: '1', label: '1' });
+    const [durLimAct2, setDurLimAct2] = useState({ value: '5', label: '5' });
+    const [durMVPA1, setDurMVPA1] = useState({ value: '1', label: '1' });
+    const [durMVPA2, setDurMVPA2] = useState({ value: '5', label: '5' });
+
+
     useEffect(() => {
         //Age-Group
         setAgeGroupOptions(convertArrayToOptions(litr.map(obj => obj["Group"])))
@@ -107,7 +131,6 @@ export default function Activity({ parentChangeActiveTab, ...rest }) {
         setDetMetricOptions(convertArrayToOptions(litr.map(obj => JSON.stringify(obj["Arguments_acc_metric"]))))
 
     }, []);
-
 
     // Event Handlers
     const setFilter = async (event, item) => {
@@ -174,6 +197,7 @@ export default function Activity({ parentChangeActiveTab, ...rest }) {
     }, [filtLit]);
 
     // Store in memory
+    useEffect(() => { localStorage.setItem('sleep_analysis', JSON.stringify(sleepAnalysis)); }, [sleepAnalysis])
     useEffect(() => { localStorage.setItem('analytical_strategy', JSON.stringify(analyticalstrategy)); }, [analyticalstrategy])
     useEffect(() => { localStorage.setItem('age_group', JSON.stringify(selectedAgeGroup)); }, [selectedAgeGroup])
     useEffect(() => { localStorage.setItem('age', JSON.stringify(selectedAge)); }, [selectedAge])
@@ -183,12 +207,25 @@ export default function Activity({ parentChangeActiveTab, ...rest }) {
     useEffect(() => { localStorage.setItem('detection_metric', JSON.stringify(selectedDetMetric)); }, [selectedDetMetric])
     useEffect(() => { localStorage.setItem('start_per_day', JSON.stringify(start)); }, [start])
     useEffect(() => { localStorage.setItem('end_per_day', JSON.stringify(end)); }, [end])
-    useEffect(() => { localStorage.setItem('interruption_rate', JSON.stringify(sliderVal)); }, [sliderVal])
     useEffect(() => { localStorage.setItem('sel_per_1', JSON.stringify(timePeriod1)); }, [timePeriod1])
     useEffect(() => { localStorage.setItem('sel_per_2', JSON.stringify(timePeriod2)); }, [timePeriod2])
     useEffect(() => { localStorage.setItem('day_crit', JSON.stringify(dayCrit)); }, [dayCrit])
     useEffect(() => { localStorage.setItem('analytical_window', JSON.stringify(alWindow)); }, [alWindow])
-    useEffect(() => { localStorage.setItem('sleep_analysis', JSON.stringify(sleepAnalysis)); }, [sleepAnalysis])
+    useEffect(() => { localStorage.setItem("time_window", JSON.stringify(selectedlTWindow)); }, [selectedlTWindow])
+    useEffect(() => { localStorage.setItem('bout_tollorance_inactive', JSON.stringify(boutTolSliderInaActVal)); }, [boutTolSliderInaActVal])
+    useEffect(() => { localStorage.setItem('bout_tollorance_lowactive', JSON.stringify(boutTolsliderLimActVal)); }, [boutTolsliderLimActVal])
+    useEffect(() => { localStorage.setItem('bout_tollorance_mvpa', JSON.stringify(boutTolsliderMVPAVal)); }, [boutTolsliderMVPAVal])
+    useEffect(() => { localStorage.setItem("duration_inactive1", JSON.stringify(durInaAct1)); }, [durInaAct1])
+    useEffect(() => { localStorage.setItem("duration_inactive2", JSON.stringify(durInaAct2)); }, [durInaAct2])
+    useEffect(() => { localStorage.setItem("duration_inactive3", JSON.stringify(durInaAct3)); }, [durInaAct3])
+    useEffect(() => { localStorage.setItem("duration_lowactive1", JSON.stringify(durLimAct1)); }, [durLimAct1])
+    useEffect(() => { localStorage.setItem("duration_lowactive2", JSON.stringify(durLimAct2)); }, [durLimAct2])
+    useEffect(() => { localStorage.setItem("duration_mvpa1", JSON.stringify(durMVPA1)); }, [durMVPA1])
+    useEffect(() => { localStorage.setItem("duration_mvpa2", JSON.stringify(durMVPA2)); }, [durMVPA2])
+    
+    // Time Window   
+    const TimeWindow = data.filter(x => x.window.includes("TimeWindow"))
+    const handleTwinChange = (event) => { setTwindow(event); }
 
     // Anlytical-Strategy
     const handleAnalyticalStrategy = (event) => {
@@ -256,10 +293,6 @@ export default function Activity({ parentChangeActiveTab, ...rest }) {
 
     }
 
-    // Handle Sleep Analysis
-    const handleSleepAnalysisChange = (event) => {
-        setSleepAnalysis(event.target.checked);
-    }
 
     // Start & End valus
     const startfunc = (value) => { setStart(value); }
@@ -267,7 +300,6 @@ export default function Activity({ parentChangeActiveTab, ...rest }) {
 
     // Slider    
     const sliderMarks = [{ value: 0.2, label: '0.2', }, { value: 1, label: '1', }]
-    const handleSliderMarksChange = (event) => { setSliderVal(event.target.value.toString()); }
 
     // Slider Time_Period_1
     const timePeriod1change = (event, newValue) => { settimePeriod1(newValue); };
@@ -282,32 +314,24 @@ export default function Activity({ parentChangeActiveTab, ...rest }) {
     // Slider Analytical Window
     const alWindowchange = (event, newValue) => { setalWindow(newValue); };
 
+
+    // Duration 
+    // Inactive
+    const handleDurIna1Change = (event) => { setDurInaAct1(event); }
+    const handleDurIna2Change = (event) => { setDurInaAct2(event); }
+    const handleDurIna3Change = (event) => { setDurInaAct3(event); }
+    // Low Activity
+    const handleDurLimAct1Change = (event) => { setDurLimAct1(event); }
+    const handleDurLimAct2Change = (event) => { setDurLimAct2(event); }
     // MVPA
-    const mvpa = data.filter(x => x.window.includes("MVPA"))
+    const handleDurMVPA1Change = (event) => { setDurMVPA1(event); }
+    const handleDurMVPA2Change = (event) => { setDurMVPA2(event); }
 
-    const [selectedlMVP1, setMvpa1] = useState({ value: '1', label: '1' });
-    const [selectedlMVPA2, setMvpa2] = useState({ value: '5', label: '5' });
-    const [selectedlMVPA3, setMvpa3] = useState({ value: '10', label: '10' });
+    // Tollorance
+    const handleBoutInActSliderMarksChange = (event) => { setBoutTolSliderInaActtVal(event.target.value.toString()); }
+    const handleBoutLimActSliderMarksChange = (event) => { setBoutTolsliderLimActVal(event.target.value.toString()); }
+    const handleBoutMVPASliderMarksChange = (event) => { setBoutTolsliderMVPAVal(event.target.value.toString()); }
 
-    const handleMVPA1Change = (event) => {
-        setMvpa1(event);
-        localStorage.setItem("MVPA1_duration", JSON.stringify(event.value.toString()));
-    }
-    const handleMVPA2Change = (event) => {
-        setMvpa2(event);
-        localStorage.setItem("MVPA2_duration", JSON.stringify(event.value.toString()));
-    }
-    const handleMVPA3Change = (event) => {
-        setMvpa3(event);
-        localStorage.setItem("MVPA3_duration", JSON.stringify(event.value.toString()));
-    }
-    // Time Window
-    const [selectedlTWindow, setTwindow] = useState();
-    const TimeWindow = data.filter(x => x.window.includes("TimeWindow"))
-    const handleTwinChange = (event) => {
-        setTwindow(event);
-        localStorage.setItem("MVPA3_duration", JSON.stringify(event.value.toString()));
-    }
     return (
         <>
             <table style={{ marginLeft: '5vh' }}>
@@ -324,11 +348,19 @@ export default function Activity({ parentChangeActiveTab, ...rest }) {
                     </td>
                 </tr>
                 <tr>
+
                     <td style={{ width: '22vh' }} >
                         <li style={{ listStyleType: 'disc' }}>
-                            <span style={{ fontSize: '15pt' }}> Time Window</span>
+                            <Tooltip
+                                className="tooltip"
+                                label="MM (midnight to midnight) WW (waking to waking)"
+                                placement='bottom'
+                                fontSize='xs'
+                                aria-label='A tooltip'>
+                                <span style={{ color: 'black', fontSize: '15pt' }}>Time Window</span>
+                            </Tooltip>
+                            <span style={{ color: 'dodgerblue', fontSize: '20pt' }}> *</span>
                         </li>
-
                     </td>
                     <td>
                         <Select id={"Twin"}
@@ -337,6 +369,10 @@ export default function Activity({ parentChangeActiveTab, ...rest }) {
                             onChange={handleTwinChange}
                             className="listboxmed" />
                     </td>
+
+
+
+
                 </tr>
                 <tr>
                     <td style={{ width: '10vh' }} >
@@ -546,30 +582,43 @@ export default function Activity({ parentChangeActiveTab, ...rest }) {
                         </div>
                     </td>
                 </tr>
+                <br />
+                <tr>
+                    <td style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                        <span style={{ fontSize: '15pt', fontWeight: 'bold', textDecoration: 'underline' }}> Bout Tollorance</span>
+                    </td>
+                    <td >
+                        <span style={{ marginLeft: '20vh', fontSize: '15pt', fontWeight: 'bold', textDecoration: 'underline' }}> Duration</span>
+                    </td>
 
+                </tr>
             </table>
 
             <br />
-            <table >
+            <table style={{ marginLeft: '5vh', width: '100vh' }} >
+                {/*********************   ROW 1   ************************/}
                 <tr>
-                    <td style={{ width: '60vh' }} >
+                    <td style={{ width: '15%'}}>
+                        <li style={{ marginLeft: '2vh', listStyleType: 'circle' }}>
+                            <span style={{ fontSize: '15pt' }}> Inactvivity: </span>
+                        </li>
+                    </td>
+                    <td style={{ width: '30%'}} >
                         <div style={{ display: 'flex' }}>
-                            <li style={{ marginLeft: '10vh', listStyleType: 'circle' }}>
-                                <span style={{ fontSize: '15pt' }}> Interruption Rate</span>
-                            </li>
+
                             <input style={{
                                 height: '3vh',
-                                width: '10%',
+                                width: '15%',
                                 marginLeft: '1%',
-                                marginRight: '3%',
+                                marginRight: '10%',
                                 borderRadius: '4px',
                                 textAlign: 'center',
                                 border: '1px solid #73a7f0'
                             }}
-                                value={sliderVal} />
+                                value={boutTolSliderInaActVal} />
                             <Slider
-                                onChange={handleSliderMarksChange}
-                                defaultValue={0.7}
+                                onChange={handleBoutInActSliderMarksChange}
+                                defaultValue={0.8}
                                 aria-labelledby="discrete-slider-small-steps"
                                 step={0.1}
                                 min={0.2}
@@ -577,37 +626,141 @@ export default function Activity({ parentChangeActiveTab, ...rest }) {
                                 valueLabelDisplay="auto"
                                 size="small"
                                 aria-label="Small"
-                                style={{ width: '40%' }}
+                                style={{ width: '60%' }}
                                 marks={sliderMarks} />
                         </div>
                     </td>
 
-                    <td style={{ width: '50%' }} >
-                        <div style={{ display: 'flex', marginLeft: '5vh', textAlign: 'top' }}>
-                            <li style={{ listStyleType: 'circle', width: '30%' }}>
-                                <span style={{ fontSize: '15pt' }}> MVPA duration</span>
-                            </li>
-                            <Select id={"MVPA1"}
-
-                                value={selectedlMVP1}
-                                isMulti={false}
-                                onChange={handleMVPA1Change}
-                                className="listboxsmall" />
-                            <Select id={"MVPA2"}
-
-                                value={selectedlMVPA2}
-                                isMulti={false}
-                                onChange={handleMVPA2Change}
-                                className="listboxsmall" />
-                            <Select id={"MVPA3"}
-
-                                value={selectedlMVPA3}
-                                isMulti={false}
-                                onChange={handleMVPA3Change}
-                                className="listboxsmall" />
+                    <td style={{ width: '35%' }} >
+                        <div style={{ display: 'flex', textAlign: 'top' }}>
+                            <Select id={"Inact1"}
+                                value={durInaAct1}
+                                options={durOptions}
+                                onChange={handleDurIna1Change}
+                                className="listboxsmallMed" />
+                            <Select id={"Inact2"}
+                                value={durInaAct2}
+                                options={durOptions}
+                                onChange={handleDurIna2Change}
+                                className="listboxsmallMed" />
+                            <Select id={"Inact3"}
+                                value={durInaAct3}
+                                options={durOptions}
+                                onChange={handleDurIna3Change}
+                                className="listboxsmallMed" />
                         </div>
                     </td>
                 </tr>
+                {/**, border: '1px solid black', borderCollapse: 'collapse' ***/}
+                {/*********************   ROW 2   ************************/}
+                <tr>
+                    <td style={{ width: '15%'}}>
+                        <li style={{ marginLeft: '2vh', listStyleType: 'circle' }}>
+                            <span style={{ fontSize: '15pt' }}> Low Actvivity: </span>
+                        </li>
+                    </td>
+                    <td style={{ width: '30%'}} >
+                        <div style={{ display: 'flex' }}>
+
+                            <input style={{
+                                height: '3vh',
+                                width: '15%',
+                                marginLeft: '1%',
+                                marginRight: '10%',
+                                borderRadius: '4px',
+                                textAlign: 'center',
+                                border: '1px solid #73a7f0'
+                            }}
+                                value={boutTolsliderLimActVal} />
+                            <Slider
+                                onChange={handleBoutLimActSliderMarksChange}
+                                defaultValue={0.8}
+                                aria-labelledby="discrete-slider-small-steps"
+                                step={0.1}
+                                min={0.2}
+                                max={1.0}
+                                valueLabelDisplay="auto"
+                                size="small"
+                                aria-label="Small"
+                                style={{ width: '60%' }}
+                                marks={sliderMarks} />
+                        </div>
+                    </td>
+
+                    <td style={{ width: '35%' }} >
+                        <div style={{ display: 'flex', textAlign: 'top' }}>
+                            <Select id={"Limact1"}
+                                value={durLimAct1}
+                                options={durOptions}
+                                onChange={handleDurLimAct1Change}
+                                className="listboxsmallMed" />
+                            <Select id={"Limact2"}
+                                value={durLimAct2}
+                                options={durOptions}
+                                onChange={handleDurLimAct2Change}
+                                className="listboxsmallMed" />
+                        </div>
+                    </td>
+                </tr>
+
+
+
+                {/*********************   ROW 3   ************************/}
+
+                <tr>
+                    <td style={{ width: '15%'}}>
+                        <li style={{ marginLeft: '2vh', listStyleType: 'circle' }}>
+                            <span style={{ fontSize: '15pt' }}> MVPA: </span>
+                        </li>
+                    </td>
+                    <td style={{ width: '30%' }} >
+                        <div style={{ display: 'flex' }}>
+
+                            <input style={{
+                                height: '3vh',
+                                width: '15%',
+                                marginLeft: '1%',
+                                marginRight: '10%',
+                                borderRadius: '4px',
+                                textAlign: 'center',
+                                border: '1px solid #73a7f0'
+                            }}
+                                value={boutTolsliderMVPAVal} />
+                            <Slider
+                                onChange={handleBoutMVPASliderMarksChange}
+                                defaultValue={0.8}
+                                aria-labelledby="discrete-slider-small-steps"
+                                step={0.1}
+                                min={0.2}
+                                max={1.0}
+                                valueLabelDisplay="auto"
+                                size="small"
+                                aria-label="Small"
+                                style={{ width: '60%' }}
+                                marks={sliderMarks} />
+                        </div>
+                    </td>
+
+                    <td style={{ width: '35%' }} >
+                        <div style={{ display: 'flex', textAlign: 'top' }}>
+                            <Select id={"MVPA1"}
+                                value={durMVPA1}
+                                options={durOptions}
+                                onChange={handleDurMVPA1Change}
+                                className="listboxsmallMed" />
+                            <Select id={"MVPA2"}
+                                value={durMVPA2}
+                                options={durOptions}
+                                onChange={handleDurMVPA2Change}
+                                className="listboxsmallMed" />
+                        </div>
+                    </td>
+                </tr>
+
+
+
+
+
             </table>
             <>
 

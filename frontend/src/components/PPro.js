@@ -72,24 +72,40 @@ export default function PPro({ parentChangeActiveTab, ...rest }) {
     const [autocalibstat, setautocalibstat] = useState(false);
     const handleautocalibChange = (event) => { setautocalibstat(event.target.checked); }
 
-    // keeps the state for physical activity radio button group
-    const [phyActivity, setphyActivity] = useState("");
-    const handlephyActivitychange = (event) => { setphyActivity(event.target.value); }
+    const [pa_enmo, setPaEnmo] = useState(false);
+    const handlePaEnmoChange = (event) => { setPaEnmo(!pa_enmo); }
+
+    const [pa_mad, setPaMad] = useState(false);
+    const handlePaMadChange = (event) => { setPaMad(!pa_mad); }
+
+    const [pa_hfen, setPaHfen] = useState(false);
+    const handlePaHfenChange = (event) => { setPaHfen(!pa_hfen); }
+
+    const [pa_en, setPaEn] = useState(false);
+    const handlePaEnChange = (event) => { setPaEn(!pa_en); }
+
+    const [pa_actilife, setPaActiLife] = useState(false);
+    const handlePaActilifeChange = (event) => { setPaActiLife(!pa_actilife); }
 
     // keeps the value for the chunk size
     const [sliderVal, setSliderVal] = useState(1);
     const handlephyChunkSizechange = (value) => {
         setSliderVal(value);
-        
+
     }
 
     useEffect(() => { localStorage.setItem('windows_1', JSON.stringify(selectedlWindow_1)); }, [selectedlWindow_1])
     useEffect(() => { localStorage.setItem('windows_2', JSON.stringify(selectedlWindow_2)); }, [selectedlWindow_2])
     useEffect(() => { localStorage.setItem('windows_3', JSON.stringify(selectedlWindow_3)); }, [selectedlWindow_3])
     useEffect(() => { localStorage.setItem("auto_calib_stat", JSON.stringify(autocalibstat)); }, [autocalibstat])
-    useEffect(() => { localStorage.setItem("PAICA", JSON.stringify(phyActivity));}, [phyActivity])
-    useEffect(() => { localStorage.setItem("chunk_size", JSON.stringify(sliderVal));}, [sliderVal])
-    
+
+    useEffect(() => { localStorage.setItem("chunk_size", JSON.stringify(sliderVal)); }, [sliderVal])
+    useEffect(() => { localStorage.setItem("pa_enmo", JSON.stringify(pa_enmo)); }, [pa_enmo])
+    useEffect(() => { localStorage.setItem("pa_mad", JSON.stringify(pa_mad)); }, [pa_mad])
+    useEffect(() => { localStorage.setItem("pa_hfen", JSON.stringify(pa_hfen)); }, [pa_hfen])
+    useEffect(() => { localStorage.setItem("pa_en", JSON.stringify(pa_en)); }, [pa_en])
+    useEffect(() => { localStorage.setItem("pa_actilife", JSON.stringify(pa_actilife)); }, [pa_actilife])
+
     return (
         <div className="mainBlock">
             <br /><br />
@@ -183,7 +199,50 @@ export default function PPro({ parentChangeActiveTab, ...rest }) {
                                 <li style={{ listStyleType: 'square' }}>Physical Activity Intensity Calculation Algorithm:</li>
                             </td>
                             <td >
-                                <CheckboxButtonSet change={handlephyActivitychange} radioitems={['ENMO', 'MAD', 'HFEN', 'EN', 'ActiLife(Neishabouri)']} />
+                                <div style={{ display: 'flex' }}>
+                                <label style={{ display: 'flex', alignItems: 'center' , marginRight: '20px'}}>
+                                    <input
+                                        type='checkbox'
+                                        checked={pa_enmo}
+                                        onChange={handlePaEnmoChange}
+                                        style={{ width: '25px', height: '25px', marginRight: '5px' }}
+                                    /> ENMO
+                                </label>
+                                <label style={{ display: 'flex', alignItems: 'center' , marginRight: '20px'}}>
+                                    <input
+                                        type='checkbox'
+                                        checked={pa_mad}
+                                        onChange={handlePaMadChange}
+                                        style={{ width: '25px', height: '25px', marginRight: '5px' }}
+                                    /> MAD
+                                </label>
+                                <label style={{ display: 'flex', alignItems: 'center' , marginRight: '20px'}}>
+                                    <input
+                                        type='checkbox'
+                                        checked={pa_hfen}
+                                        onChange={handlePaHfenChange}
+                                        style={{ width: '25px', height: '25px', marginRight: '5px' }}
+                                    /> HFEN
+                                </label>
+
+                                <label style={{ display: 'flex', alignItems: 'center' , marginRight: '20px'}}>
+                                    <input
+                                        type='checkbox'
+                                        checked={pa_en}
+                                        onChange={handlePaEnChange}
+                                        style={{ width: '25px', height: '25px', marginRight: '5px' }}
+                                    /> EN
+                                </label>
+
+                                <label style={{ display: 'flex', alignItems: 'center' , marginRight: '20px'}}>
+                                    <input
+                                        type='checkbox'
+                                        checked={pa_actilife}
+                                        onChange={handlePaActilifeChange}
+                                        style={{ width: '25px', height: '25px', marginRight: '5px' }}
+                                    /> ActiLife(Neishabouri)
+                                </label>
+                                </div>
                             </td>
                         </tr>
                         <br />
@@ -241,3 +300,14 @@ export default function PPro({ parentChangeActiveTab, ...rest }) {
         </div>
     )
 }
+
+/*
+
+ //<CheckboxButtonSet change={handlephyActivitychange} radioitems={['ENMO', 'MAD', 'HFEN', 'EN', 'ActiLife(Neishabouri)']} />
+
+    const [pa_mad, setPaMad]= useState(false);
+    const handlePaMadChange = (event) => { setPaMad(event.target.value); }
+
+
+useEffect(() => { localStorage.setItem("PAICA", JSON.stringify(phyActivity));}, [phyActivity])
+*/
