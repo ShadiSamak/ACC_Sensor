@@ -15,7 +15,16 @@
 }
 
 .pprolistbox{
-    width: 20vh;
+    margin-left: 5%;
+    margin-right: 10%;
+    height: 3.2vh;
+    width: 10vh;
+    text-align: center;
+    border-color: lightgray;
+    border-style: solid;
+    font-size: large;
+    color: darkcyan;
+    border-width: 0.5px;
 }
 
 .lists{
@@ -96,9 +105,11 @@
 }
 .pptable{
     width: 100%;
+
 }
 
 .pptablewintitle{
+    padding-right: 10px;
     width: 15%;
     text-align: end;
     font-style: italic;

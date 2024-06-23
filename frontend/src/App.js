@@ -1,6 +1,5 @@
 import './App.css';
-import Tab from 'react-bootstrap/Tab';
-import Tabs from 'react-bootstrap/Tabs';
+import { Tab, Tabs, Button } from 'react-bootstrap';
 import { useState } from 'react';
 import File from './components/File';
 import PPro from './components/PPro';
@@ -11,47 +10,13 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import logo from './images/logo.png'
 import React, { useEffect } from 'react';
 
-
-
-// function setmemory(){
-//   localStorage.setItem("input_file_name", JSON.stringify("-"));
-//   localStorage.setItem("output_file_name", JSON.stringify("-"));
-// //  localStorage.setItem("windows_1", '0');
-//  // localStorage.setItem("windows_2", JSON.stringify("0"));
-//  // localStorage.setItem("windows_3", JSON.stringify("0"));
-//   //localStorage.setItem("auto_calib_stat", JSON.stringify("0"));
-//   localStorage.setItem("PAICA", JSON.stringify("0"));
-//   localStorage.setItem("chunk_size", JSON.stringify("0"));
-//   localStorage.setItem("analytical_strategy", JSON.stringify("0"));
-//   localStorage.setItem("start_per_day", JSON.stringify("0"));
-//   localStorage.setItem("end_per_day", JSON.stringify("0"));
-//   localStorage.setItem("sel_per_1", JSON.stringify("0"));
-//   localStorage.setItem("sel_per_2", JSON.stringify("0"));
-//   localStorage.setItem("max_num_days", JSON.stringify("0"));
-//   localStorage.setItem("analytical_window", JSON.stringify("0"));
-//   localStorage.setItem("device", JSON.stringify("0"));
-//   localStorage.setItem("position", JSON.stringify("0"));
-//   localStorage.setItem("age_group", JSON.stringify("0"));
-//   localStorage.setItem("cutpoints", JSON.stringify("0"));
-//   localStorage.setItem("detection_metric", JSON.stringify("0"));
-//   localStorage.setItem("interruption_rate", JSON.stringify("0"));
-//   localStorage.setItem("MVPA_duration", JSON.stringify("0"));
-//   localStorage.setItem("time_threshold", JSON.stringify("0"));
-//   localStorage.setItem("angle_threshold", JSON.stringify("0"));
-//   localStorage.setItem("ignore_non_wear_time", JSON.stringify("0"));
-// }
-
-  export default function App() {
+export default function App() {
   const [activeTab, setActiveTab] = useState('file');
-  
-  function changeActiveTab (event) {
+
+  function changeActiveTab(event) {
     setActiveTab(event)
   }
 
-  // useEffect(() => {
-  //   const result = setmemory();
-  //   console.log(result);
-  // });
 
   return (
     <div className='application'>
@@ -59,17 +24,15 @@ import React, { useEffect } from 'react';
         <table className='custom-table'>
           <tr >
             <td className='column-left'>
-            <h1 className='title'>ACC Platform</h1>
+              <h1 className='title'>ACC Platform</h1>
             </td>
             <td className='column-right'>
-            <img className="logo" src={logo} />
+              <img className="logo" src={logo} />
             </td>
           </tr>
         </table>
-
-        
-       
       </header>
+
       <div className='sdp'>
         <Tabs
           activeKey={activeTab}
@@ -77,29 +40,44 @@ import React, { useEffect } from 'react';
           className="mb-3"
           justify
           onSelect={changeActiveTab}
-          onChange={changeActiveTab}
         >
-          
+
           <Tab eventKey="file" title="File">
-            <File parentChangeActiveTab={changeActiveTab} activeKey={activeTab}/>
+            <File parentChangeActiveTab={changeActiveTab} activeKey={activeTab} />
+            <Button style={{ marginLeft: '132vh', color: 'black', border: 'none', backgroundColor: 'transparent' }} onClick={() => setActiveTab('preprocessing')}>Next  {'\u27A1'}</Button>
           </Tab>
           <Tab eventKey="preprocessing" title="Pre-Processing">
-            <PPro parentChangeActiveTab={changeActiveTab} activeKey={activeTab}/>
+            <PPro parentChangeActiveTab={changeActiveTab} activeKey={activeTab} />
+            <div style={{display: 'flex',justifyContent: 'flex-end', marginLeft: '122vh'}}>
+              <Button style={{ color: 'black', border: 'none', backgroundColor: 'transparent' }} onClick={() => setActiveTab('file')}>{'\u2B05'}   Prev</Button>
+              <Button style={{ color: 'black', border: 'none', backgroundColor: 'transparent' }} onClick={() => setActiveTab('activity')}>Next  {'\u27A1'}</Button>
+            </div>
           </Tab>
           <Tab eventKey="activity" title="Activity">
-            <Activity parentChangeActiveTab={changeActiveTab} activeKey={activeTab}/>
+            <Activity parentChangeActiveTab={changeActiveTab} activeKey={activeTab} />
+            <div style={{display: 'flex',justifyContent: 'flex-end', marginLeft: '122vh'}}>
+              <Button style={{ color: 'black', border: 'none', backgroundColor: 'transparent' }} onClick={() => setActiveTab('preprocessing')}>{'\u2B05'}   Prev</Button>
+              <Button style={{ color: 'black', border: 'none', backgroundColor: 'transparent' }} onClick={() => setActiveTab('sleep')}>Next  {'\u27A1'}</Button>
+            </div>
           </Tab>
           <Tab eventKey="sleep" title="Sleep">
-            <Sleep parentChangeActiveTab={changeActiveTab} activeKey={activeTab}/>
+            <Sleep parentChangeActiveTab={changeActiveTab} activeKey={activeTab} />
+            <div style={{display: 'flex',justifyContent: 'flex-end', marginLeft: '122vh'}}>
+              <Button style={{ color: 'black', border: 'none', backgroundColor: 'transparent' }} onClick={() => setActiveTab('activity')}>{'\u2B05'}   Prev</Button>
+              <Button style={{ color: 'black', border: 'none', backgroundColor: 'transparent' }} onClick={() => setActiveTab('run')}>Next  {'\u27A1'}</Button>
+            </div>
           </Tab>
           <Tab eventKey="run" title="Run">
-            <Run parentChangeActiveTab={changeActiveTab} activeKey={activeTab}/>
+            <Run parentChangeActiveTab={changeActiveTab} activeKey={activeTab} />
+            <div style={{display: 'flex',justifyContent: 'flex-end', marginLeft: '122vh'}}>
+              <Button style={{ color: 'black', border: 'none', backgroundColor: 'transparent' }} onClick={() => setActiveTab('sleep')}>{'\u2B05'}   Prev</Button>
+            </div>
           </Tab>
         </Tabs>
       </div>
-      <br/><br/> 
-     
+      <br /><br />
+
     </div>
-    
+
   );
 }

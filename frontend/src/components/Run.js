@@ -13,11 +13,11 @@ export default function Run() {
     const [outputname_value, setOutputFileValue] = useState("");
 
     // Pre-Processing
-    const [sleep_analysis_value, setSleepAnalysisValue] = useState("");
+    const [sleep_analysis_value, setSleepAnalysisValue] = useState(false);
     const [time_window_value, setTwindowValue] = useState("");
-    const [windows1_value, setWindows1Value] = useState("0");
-    const [windows2_value, setWindows2Value] = useState("0");
-    const [windows3_value, setWindows3Value] = useState("0");
+    const [windows1_value, setWindows1Value] = useState("");
+    const [windows2_value, setWindows2Value] = useState("");
+    const [windows3_value, setWindows3Value] = useState("");
     const [auto_calibration_value, setAutoCalibrationValue] = useState("");
     const [pa_enmo_value, setPaEnmoValue] = useState("");
     const [pa_mad_value, setPaMadValue] = useState("");
@@ -30,8 +30,8 @@ export default function Run() {
     const [analytical_strategy_value, setAnalyticalStrategyValue] = useState("");
     const [startofperiod, setStartOfPeriod] = useState("");
     const [endOfperiod, setEndOfPeriod] = useState("");
-    const [sel_per_1_value, setSelPer1Value] = useState("");
-    const [sel_per_2_value, setSelPer2Value] = useState("");
+    const [q_win_v1_value, setQWinValue1] = useState("");
+    const [q_win_v2_value, setQWinValue2] = useState("");
     const [day_crit_value, setDayCritValue] = useState("");
     const [analytical_window_value, setAnalyticalWindowValue] = useState("");
     const [device_value, setDeviceValue] = useState("");
@@ -66,9 +66,9 @@ export default function Run() {
     }, []);
 
     function load_memory() {
+        const sleep = localStorage.getItem('sleep_analysis')
+        setSleepAnalysisValue(JSON.parse(localStorage.getItem('sleep_analysis')))
 
-        // Ffile
-        setDayNightValue(JSON.parse(localStorage.getItem('day_night')));
         if (JSON.parse(localStorage.getItem('time_zone')) !== "")
             setTimeZoneValue(JSON.parse(localStorage.getItem('time_zone'))['value']);
         setInputFileValue(JSON.parse(localStorage.getItem('input_file_name')));
@@ -76,14 +76,9 @@ export default function Run() {
 
 
         // Pre-Processing
-        const win1 = JSON.parse(localStorage.getItem('windows_1'))
-        if (win1 !== "" && win1 !== 0) setWindows1Value(JSON.parse(localStorage.getItem('windows_1'))['value']);
-
-        const win2 = JSON.parse(localStorage.getItem('windows_2'))
-        if (win2 !== "" && win2 !== 0) setWindows2Value(JSON.parse(localStorage.getItem('windows_2'))['value']);
-
-        const win3 = JSON.parse(localStorage.getItem('windows_3'))
-        if (win3 !== "" && win3 !== 0) setWindows3Value(JSON.parse(localStorage.getItem('windows_3'))['value']);
+        setWindows1Value(JSON.parse(localStorage.getItem('windows_1')));
+        setWindows2Value(JSON.parse(localStorage.getItem('windows_2')));
+        setWindows3Value(JSON.parse(localStorage.getItem('windows_3')));
 
         setAutoCalibrationValue(localStorage.getItem('auto_calib_stat'));
         setPaEnmoValue(localStorage.getItem('pa_enmo'));
@@ -94,7 +89,7 @@ export default function Run() {
         setProcChunkSizeValue(JSON.parse(localStorage.getItem('chunk_size')));
 
         // Activity
-        setSleepAnalysisValue(localStorage.getItem('sleep_analysis'));
+
         const twin = JSON.parse(localStorage.getItem('time_window'))
         if (twin !== "" && twin !== 0) setTwindowValue(JSON.parse(localStorage.getItem('time_window'))['value']);
 
@@ -103,8 +98,9 @@ export default function Run() {
 
         setStartOfPeriod(JSON.parse(localStorage.getItem('start_per_day')));
         setEndOfPeriod(JSON.parse(localStorage.getItem('end_per_day')));
-        setSelPer1Value(JSON.parse(localStorage.getItem('sel_per_1')));
-        setSelPer2Value(JSON.parse(localStorage.getItem('sel_per_2')));
+        setQWinValue1(JSON.parse(localStorage.getItem('q_win_v1')));
+        setQWinValue2(JSON.parse(localStorage.getItem('q_win_v2')));
+        
         setDayCritValue(JSON.parse(localStorage.getItem('day_crit')));
         setAnalyticalWindowValue(JSON.parse(localStorage.getItem('analytical_window')));
         if (JSON.parse(localStorage.getItem('age_group')) !== "")
@@ -141,11 +137,19 @@ export default function Run() {
         setDurMVPA2Value(JSON.parse(localStorage.getItem('duration_mvpa2'))['value']);
 
         // Sleep
-        setTimeThresholdValue(JSON.parse(localStorage.getItem('time_threshold')));
-        setAngleThresholdValue(JSON.parse(localStorage.getItem('angle_threshold')));
-        setIgnoreNonWearTimeValue(localStorage.getItem('ignore_non_wear_time'));
-        setHasibValue(JSON.parse(localStorage.getItem('hasib'))['value']);
-        console.log(durLimAct2_value)
+        if (sleep === 'true'){
+            setTimeThresholdValue(JSON.parse(localStorage.getItem('time_threshold')));
+            setAngleThresholdValue(JSON.parse(localStorage.getItem('angle_threshold')));
+            setIgnoreNonWearTimeValue(localStorage.getItem('ignore_non_wear_time'));
+            setHasibValue(JSON.parse(localStorage.getItem('hasib'))['value']);}
+        else{
+            setTimeThresholdValue("");
+            setAngleThresholdValue("");
+            setIgnoreNonWearTimeValue("");
+            setHasibValue("");}
+    
+
+        
     }
     
 
@@ -193,8 +197,8 @@ export default function Run() {
             "analytical_strategy_value": analytical_strategy_value,
             "startofperiod": startofperiod,
             "endOfperiod": endOfperiod,
-            "sel_per_1_value": sel_per_1_value,
-            "sel_per_2_value": sel_per_2_value,
+            "q_win_v1_value": q_win_v1_value,
+            "q_win_v2_value": q_win_v2_value,
             "day_crit": day_crit_value,
             "analytical_window_value": analytical_window_value,
             "device_value": device_value,
@@ -298,11 +302,11 @@ export default function Run() {
                         <li style={{ listStyleType: 'disc' }}> End day---
                             <span style={{ color: 'dodgerblue', fontSize: '12pt' }}>{endOfperiod}</span>
                         </li>
-                        <li style={{ listStyleType: 'disc' }}> Selection Periods_1---
-                            <span style={{ color: 'dodgerblue', fontSize: '12pt' }}>{sel_per_1_value}</span>
+                        <li style={{ listStyleType: 'disc' }}> Selection Periods_(Q window_1)---
+                            <span style={{ color: 'dodgerblue', fontSize: '12pt' }}>{q_win_v1_value}</span>
                         </li>
-                        <li style={{ listStyleType: 'disc' }}> Selection Periods_2---
-                            <span style={{ color: 'dodgerblue', fontSize: '12pt' }}>{sel_per_2_value}</span>
+                        <li style={{ listStyleType: 'disc' }}> Selection Periods_2(Q_window_2)---
+                            <span style={{ color: 'dodgerblue', fontSize: '12pt' }}>{q_win_v2_value}</span>
                         </li>
                         <li style={{ listStyleType: 'disc' }}> Day Crit---
                             <span style={{ color: 'dodgerblue', fontSize: '12pt' }}>{day_crit_value}</span>
@@ -424,3 +428,11 @@ export default function Run() {
         </>
     )
 }
+
+
+        //const win1 = JSON.parse(localStorage.getItem('windows_1'))
+        //if (win1 !== "" && win1 !== 0) 
+        //const win2 = JSON.parse(localStorage.getItem('windows_2'))
+        //if (win2 !== "" && win2 !== 0) 
+        //const win3 = JSON.parse(localStorage.getItem('windows_3'))
+        //if (win3 !== "" && win3 !== 0) 

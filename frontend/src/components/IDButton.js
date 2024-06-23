@@ -27,10 +27,10 @@ export default function IDButton(props) {
 
   return (
     <div className={props.className}>
-      <span style={{fontSize : props.titlesize }} className="title">{props.title}</span>
-      <button  className="button" onClick={decrement}>-</button>
-      <span style={{fontSize : props.titlesize }} className="block">{count}</span>
-      <button className="button" onClick={increment}>+</button>
+      <span disabled={props.disabled} style={{fontSize : props.titlesize }} className="title">{props.title}</span>
+      <button  disabled={props.disabled} className="button" onClick={decrement}>-</button>
+      <span disabled={props.disabled} style={{fontSize : props.titlesize }} className="block">{count}</span>
+      <button disabled={props.disabled} className="button" onClick={increment}>+</button>
     </div>
   );
 }

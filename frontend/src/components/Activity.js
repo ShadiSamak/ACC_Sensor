@@ -1,6 +1,6 @@
 import Select from 'react-select'
 import FormControlLabel from '@mui/material/FormControlLabel';
-import Switch from '@mui/material/Switch';
+
 
 import React, { useState, useEffect } from "react";
 import data from '../data/activity.json'
@@ -34,9 +34,6 @@ export default function Activity({ parentChangeActiveTab, ...rest }) {
         }));
     }
 
-    // Sleep Analysis
-    const [sleepAnalysis, setSleepAnalysis] = useState(false)
-    const handleSleepAnalysisChange = (event) => { setSleepAnalysis(event.target.checked); }
 
     // Time Window
     const [selectedlTWindow, setTwindow] = useState("");
@@ -44,13 +41,13 @@ export default function Activity({ parentChangeActiveTab, ...rest }) {
     // Start & End valus
     const [start, setStart] = useState(0);
     const [end, setEnd] = useState(0);
-
+    const [startEndDisabled, setStartEndDisabled]= useState(false)
 
     // Slider Time_Period_1
     const [timePeriod1, settimePeriod1] = useState(0);
 
     // Slider Time_Period_2
-    const [timePeriod2, settimePeriod2] = useState(0);
+    const [timePeriod2, settimePeriod2] = useState(24);
 
     // Slider Day Crit
     const [dayCrit, setDayCrit] = useState(0);
@@ -196,9 +193,20 @@ export default function Activity({ parentChangeActiveTab, ...rest }) {
 
     }, [filtLit]);
 
+    
+
+
+
+
     // Store in memory
-    useEffect(() => { localStorage.setItem('sleep_analysis', JSON.stringify(sleepAnalysis)); }, [sleepAnalysis])
-    useEffect(() => { localStorage.setItem('analytical_strategy', JSON.stringify(analyticalstrategy)); }, [analyticalstrategy])
+    useEffect(() => { 
+        localStorage.setItem('analytical_strategy', JSON.stringify(analyticalstrategy));
+        console.log(analyticalstrategy)
+        if (analyticalstrategy['value'] ==="1")
+            setStartEndDisabled(false)
+        else
+            setStartEndDisabled(true)
+    }, [analyticalstrategy])
     useEffect(() => { localStorage.setItem('age_group', JSON.stringify(selectedAgeGroup)); }, [selectedAgeGroup])
     useEffect(() => { localStorage.setItem('age', JSON.stringify(selectedAge)); }, [selectedAge])
     useEffect(() => { localStorage.setItem('device', JSON.stringify(selectedlDevice)); }, [selectedlDevice])
@@ -207,8 +215,8 @@ export default function Activity({ parentChangeActiveTab, ...rest }) {
     useEffect(() => { localStorage.setItem('detection_metric', JSON.stringify(selectedDetMetric)); }, [selectedDetMetric])
     useEffect(() => { localStorage.setItem('start_per_day', JSON.stringify(start)); }, [start])
     useEffect(() => { localStorage.setItem('end_per_day', JSON.stringify(end)); }, [end])
-    useEffect(() => { localStorage.setItem('sel_per_1', JSON.stringify(timePeriod1)); }, [timePeriod1])
-    useEffect(() => { localStorage.setItem('sel_per_2', JSON.stringify(timePeriod2)); }, [timePeriod2])
+    useEffect(() => { localStorage.setItem('q_win_v1', JSON.stringify(timePeriod1)); }, [timePeriod1])
+    useEffect(() => { localStorage.setItem('q_win_v2', JSON.stringify(timePeriod2)); }, [timePeriod2])
     useEffect(() => { localStorage.setItem('day_crit', JSON.stringify(dayCrit)); }, [dayCrit])
     useEffect(() => { localStorage.setItem('analytical_window', JSON.stringify(alWindow)); }, [alWindow])
     useEffect(() => { localStorage.setItem("time_window", JSON.stringify(selectedlTWindow)); }, [selectedlTWindow])
@@ -335,18 +343,7 @@ export default function Activity({ parentChangeActiveTab, ...rest }) {
     return (
         <>
             <table style={{ marginLeft: '5vh' }}>
-                <tr>
-                    <td style={{ width: '22vh' }} >
-                        <li style={{ listStyleType: 'disc' }}>
-                            <span style={{ fontSize: '15pt' }}> Sleep Analysis</span>
-                            <Switch
-                                checked={sleepAnalysis}
-                                onChange={handleSleepAnalysisChange}
-                                inputProps={{ 'aria-label': 'controlled' }}
-                            />
-                        </li>
-                    </td>
-                </tr>
+
                 <tr>
 
                     <td style={{ width: '22vh' }} >
@@ -400,8 +397,8 @@ export default function Activity({ parentChangeActiveTab, ...rest }) {
                     </td>
                     <td style={{ width: '40vh' }} >
                         <div className='startendbox' >
-                            <IDButton titlesize='15pt' className="idbtn" title="Start" parentCallback={startfunc} />
-                            <IDButton titlesize='15pt' className="idbtn" title="End" parentCallback={endfunc} />
+                            <IDButton disabled={startEndDisabled} titlesize='15pt' className="idbtn" title="Start" parentCallback={startfunc} />
+                            <IDButton disabled={startEndDisabled} titlesize='15pt' className="idbtn" title="End" parentCallback={endfunc} />
                         </div>
                     </td>
                 </tr>
@@ -762,6 +759,14 @@ export default function Activity({ parentChangeActiveTab, ...rest }) {
 
 
             </table>
+
+        </>
+    )
+}
+
+
+/*
+
             <>
 
                 <td style={{ width: '135vh', height: '8vh', textAlign: 'right', verticalAlign: 'middle' }}>
@@ -770,6 +775,8 @@ export default function Activity({ parentChangeActiveTab, ...rest }) {
                         <a onClick={() => parentChangeActiveTab("sleep")} style={{ fontSize: 20 }}>  NEXT  {'\u27A1'}</a></div>
                 </td>
             </>
-        </>
-    )
-}
+
+
+
+
+*/

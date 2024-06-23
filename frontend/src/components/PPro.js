@@ -1,5 +1,6 @@
 import '../styles/ppro.css'
 import Select from 'react-select'
+import CreatableSelect from 'react-select/creatable';
 import React, { useState, useEffect } from "react";
 import window from '../data/ppro.json'
 import { Tooltip } from '@chakra-ui/react'
@@ -7,46 +8,8 @@ import CheckboxButtonSet from './CheckboxButtonSet'
 import Slider from '@mui/material/Slider';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Switch from '@mui/material/Switch';
+import sliderMarks from '../data/ppro2.json';
 
-
-const sliderMarks = [
-    {
-        value: 0.2,
-        label: '2:24',
-    },
-    {
-        value: 0.3,
-        label: '3:36',
-    },
-    {
-        value: 0.4,
-        label: '4:48',
-    },
-    {
-        value: 0.5,
-        label: '6:00',
-    },
-    {
-        value: 0.6,
-        label: '07:12',
-    },
-    {
-        value: 0.7,
-        label: '08:24',
-    },
-    {
-        value: 0.8,
-        label: '09:36',
-    },
-    {
-        value: 0.9,
-        label: '10:48',
-    },
-    {
-        value: 1,
-        label: '12:00',
-    }
-]
 
 export default function PPro({ parentChangeActiveTab, ...rest }) {
 
@@ -57,16 +20,34 @@ export default function PPro({ parentChangeActiveTab, ...rest }) {
     }))
 
     // keeps the state for window1
-    const [selectedlWindow_1, setWindow_1] = useState(0);
-    const handleWindow1Change = (event) => { setWindow_1(event); }
+    const [selectedlWindow_1, setWindow_1] = useState(5);
+    const handleWindow1Change = (event) => { 
+        const inputValue = event.target.value;
+        if (isNaN(inputValue)) {
+          alert('Please enter a numerical value.');
+        } else {
+          setWindow_1(inputValue);
+        }}
 
     // keeps the state for window2
-    const [selectedlWindow_2, setWindow_2] = useState(0);
-    const handleWindow2Change = (event) => { setWindow_2(event); }
+    const [selectedlWindow_2, setWindow_2] = useState(900);
+    const handleWindow2Change = (event) => { 
+        const inputValue = event.target.value;
+        if (isNaN(inputValue)) {
+          alert('Please enter a numerical value.');
+        } else {
+          setWindow_2(inputValue);
+        }}
 
     // keeps the state for window3
-    const [selectedlWindow_3, setWindow_3] = useState(0);
-    const handleWindow3Change = (event) => { setWindow_3(event); }
+    const [selectedlWindow_3, setWindow_3] = useState(3600);
+    const handleWindow3Change = (event) => {
+        const inputValue = event.target.value;
+        if (isNaN(inputValue)) {
+          alert('Please enter a numerical value.');
+        } else {
+          setWindow_3(inputValue);
+        }}
 
     // keeps the state for auto calibration
     const [autocalibstat, setautocalibstat] = useState(false);
@@ -132,13 +113,12 @@ export default function PPro({ parentChangeActiveTab, ...rest }) {
                             <span style={{ color: 'dodgerblue', fontSize: '20pt' }}> *</span>
                         </td>
                         <td className='pptableinbox'>
-                            <Select id={"Timebox_Eventlister"}
-                                options={window[0].vals}
-                                defaultValue={window[0].vals[1]}
+                            <input
                                 value={selectedlWindow_1}
-                                onChange={handleWindow1Change}
-                                className="pprolistbox" />
+                                className="pprolistbox"
+                                onChange={handleWindow1Change} />
                         </td>
+                        
                         <td className='pptablewintitle'>
                             <Tooltip
                                 className='tooltip'
@@ -150,12 +130,11 @@ export default function PPro({ parentChangeActiveTab, ...rest }) {
                             <span style={{ color: 'dodgerblue', fontSize: '20pt' }}> *</span>
                         </td>
                         <td>
-                            <Select id={"Timebox_Eventlister"}
-                                options={window[1].vals}
+                            <input
                                 value={selectedlWindow_2}
-                                defaultValue={window[1].vals[1]}
-                                onChange={handleWindow2Change}
-                                className="pprolistbox" /></td>
+                                className="pprolistbox"
+                                onChange={handleWindow2Change} />
+                        </td>
 
                         <td className='pptablewintitle'>
                             <Tooltip
@@ -168,80 +147,81 @@ export default function PPro({ parentChangeActiveTab, ...rest }) {
                             <span style={{ color: 'dodgerblue', fontSize: '20pt' }}> *</span>
                         </td>
                         <td>
-                            <Select id={"Timebox_Eventlister"}
-                                options={window[2].vals}
+                            <input
                                 value={selectedlWindow_3}
-                                defaultValue={window[2].vals[2]}
-                                onChange={handleWindow3Change}
-                                className="pprolistbox" />
+                                className="pprolistbox"
+                                onChange={handleWindow3Change} />
                         </td>
 
                     </tr>
                 </td>
             </table>
+            <br />
+            <table>
+                <tr>
+                    <td style={{ width: '35vh' }} className='pptitle'>
+                        <li style={{ listStyleType: 'square' }}>Auto-Calibration<span style={{ fontStyle: 'italic' }}>(Recommended)</span></li>
+                    </td>
+                    <td style={{ width: '20vh' }} >
+                        <FormControlLabel
+                            value="start"
+                            control={<Switch checked={autocalibstat} onChange={handleautocalibChange} color="primary" />} />
+                    </td>
+                </tr>
+            </table>
             <table className='pptable'>
                 <tr>
                     <td>
                         <br />
-                        <tr>
-                            <td style={{ width: '28vh' }} className='pptitle'>
-                                <li style={{ listStyleType: 'square' }}>Auto-Calibration<span style={{ fontStyle: 'italic' }}>(Recommended)</span></li>
-                            </td>
-                            <td style={{ width: '20vh' }} >
-                                <FormControlLabel
-                                    value="start"
-                                    control={<Switch checked={autocalibstat} onChange={handleautocalibChange} color="primary" />} />
-                            </td>
-                        </tr>
-                        <br />
+
                         <tr>
                             <td className='pptitle'>
                                 <li style={{ listStyleType: 'square' }}>Physical Activity Intensity Calculation Algorithm:</li>
                             </td>
                             <td >
                                 <div style={{ display: 'flex' }}>
-                                <label style={{ display: 'flex', alignItems: 'center' , marginRight: '20px'}}>
-                                    <input
-                                        type='checkbox'
-                                        checked={pa_enmo}
-                                        onChange={handlePaEnmoChange}
-                                        style={{ width: '25px', height: '25px', marginRight: '5px' }}
-                                    /> ENMO
-                                </label>
-                                <label style={{ display: 'flex', alignItems: 'center' , marginRight: '20px'}}>
-                                    <input
-                                        type='checkbox'
-                                        checked={pa_mad}
-                                        onChange={handlePaMadChange}
-                                        style={{ width: '25px', height: '25px', marginRight: '5px' }}
-                                    /> MAD
-                                </label>
-                                <label style={{ display: 'flex', alignItems: 'center' , marginRight: '20px'}}>
-                                    <input
-                                        type='checkbox'
-                                        checked={pa_hfen}
-                                        onChange={handlePaHfenChange}
-                                        style={{ width: '25px', height: '25px', marginRight: '5px' }}
-                                    /> HFEN
-                                </label>
+                                    <label style={{ display: 'flex', alignItems: 'center', marginRight: '20px' }}>
+                                        <input
+                                            type='checkbox'
+                                            checked={pa_enmo}
+                                            onChange={handlePaEnmoChange}
+                                            style={{ width: '25px', height: '25px', marginRight: '5px' }}
+                                        /> ENMO
+                                    </label>
+                                    <label style={{ display: 'flex', alignItems: 'center', marginRight: '20px' }}>
+                                        <input
+                                            type='checkbox'
+                                            checked={pa_mad}
+                                            onChange={handlePaMadChange}
+                                            style={{ width: '25px', height: '25px', marginRight: '5px' }}
+                                        /> MAD
+                                    </label>
+                                    <label style={{ display: 'flex', alignItems: 'center', marginRight: '20px' }}>
+                                        <input
+                                            type='checkbox'
+                                            checked={pa_hfen}
+                                            onChange={handlePaHfenChange}
+                                            style={{ width: '25px', height: '25px', marginRight: '5px' }}
+                                        /> HFEN
+                                    </label>
 
-                                <label style={{ display: 'flex', alignItems: 'center' , marginRight: '20px'}}>
-                                    <input
-                                        type='checkbox'
-                                        checked={pa_en}
-                                        onChange={handlePaEnChange}
-                                        style={{ width: '25px', height: '25px', marginRight: '5px' }}
-                                    /> EN
-                                </label>
+                                    <label style={{ display: 'flex', alignItems: 'center', marginRight: '20px' }}>
+                                        <input
+                                            type='checkbox'
+                                            checked={pa_en}
+                                            onChange={handlePaEnChange}
+                                            style={{ width: '25px', height: '25px', marginRight: '5px' }}
+                                        /> EN
+                                    </label>
 
-                                <label style={{ display: 'flex', alignItems: 'center' , marginRight: '20px'}}>
-                                    <input
-                                        type='checkbox'
-                                        checked={pa_actilife}
-                                        onChange={handlePaActilifeChange}
-                                        style={{ width: '25px', height: '25px', marginRight: '5px' }}
-                                    /> ActiLife(Neishabouri)
-                                </label>
+                                    <label style={{ display: 'flex', alignItems: 'center', marginRight: '20px' }}>
+                                        <input
+                                            type='checkbox'
+                                            checked={pa_actilife}
+                                            onChange={handlePaActilifeChange}
+                                            style={{ width: '25px', height: '25px', marginRight: '5px' }}
+                                        /> ActiLife(Neishabouri)
+                                    </label>
                                 </div>
                             </td>
                         </tr>
@@ -278,7 +258,7 @@ export default function PPro({ parentChangeActiveTab, ...rest }) {
                                     valueLabelDisplay="auto"
                                     size="small"
                                     aria-label="Small"
-                                    marks={sliderMarks}
+                                    marks={sliderMarks.sliderMarks2}
                                 />
                             </td>
                         </tr>
@@ -290,9 +270,7 @@ export default function PPro({ parentChangeActiveTab, ...rest }) {
             <table className='pptable'>
                 <tr>
                     <td style={{ width: '100%', height: '8vh', textAlign: 'right', verticalAlign: 'middle' }}>
-                        <div style={{ marginRight: '30px' }}>
-                            <a style={{ fontSize: 20 }} onClick={() => parentChangeActiveTab("file")} >  {'\u2B05'}   PREV  |</a>
-                            <a style={{ fontSize: 20 }} onClick={() => parentChangeActiveTab("activity")}>NEXT {'\u27A1'}</a></div>
+                        <div style={{ marginRight: '30px' }}></div>
                     </td>
 
                 </tr>
@@ -310,4 +288,30 @@ export default function PPro({ parentChangeActiveTab, ...rest }) {
 
 
 useEffect(() => { localStorage.setItem("PAICA", JSON.stringify(phyActivity));}, [phyActivity])
+
+
+                            <a style={{ fontSize: 20 }} onClick={() => parentChangeActiveTab("file")} >  {'\u2B05'}   PREV  |</a>
+                            <a style={{ fontSize: 20 }} onClick={() => parentChangeActiveTab("activity")}>NEXT {'\u27A1'}</a>
+
+                            <Select id={"Timebox_Eventlister"}
+                                options={window[0].vals}
+                                defaultValue={window[0].vals[1]}
+                                value={selectedlWindow_1}
+                                onChange={handleWindow1Change}
+                                className="pprolistbox" />
+                            
+                            <Select id={"Timebox_Eventlister"}
+                                options={window[1].vals}
+                                value={selectedlWindow_2}
+                                defaultValue={window[1].vals[1]}
+                                onChange={handleWindow2Change}
+                                className="pprolistbox" />
+
+                            <Select id={"Timebox_Eventlister"}
+                                options={window[2].vals}
+                                value={selectedlWindow_3}
+                                defaultValue={window[2].vals[2]}
+                                onChange={handleWindow3Change}
+                                className="pprolistbox" />
+
 */

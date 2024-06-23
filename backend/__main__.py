@@ -73,8 +73,8 @@ def config():
         analytical_strategy_value =data_json['analytical_strategy_value']
         startofperiod =data_json['startofperiod']
         endOfperiod =data_json['endOfperiod']
-        sel_per_1_value =data_json['sel_per_1_value']
-        sel_per_2_value =data_json['sel_per_2_value']
+        q_win_v1_value =data_json['q_win_v1_value']
+        q_win_v2_value =data_json['q_win_v2_value']
         day_crit_value =data_json['day_crit']
         analytical_window_value =data_json['analytical_window_value']
         device_value =data_json['device_value']
@@ -130,11 +130,11 @@ GGIR(
     chunksize={proc_chunk_size_value},
     print.summary=TRUE,
     strategy = {analytical_strategy_value},
-    hrs.del.start = {sel_per_1_value}
-    hrs.del.end = {sel_per_2_value}
+    hrs.del.start = {startofperiod}
+    hrs.del.end = {endOfperiod}
     maxdur = 0,
     includedaycrit = {day_crit_value},
-    qwindow=c({analytical_window_value[0]},{analytical_window_value[1]}),
+    qwindow=c({q_win_v1_value},{q_win_v2_value}),
     
     mvpathreshold =c({cutpoints_value[0]}, {cutpoints_value[1]}, {cutpoints_value[2]}),
     mvpadur = c({durInaAct1_value},{durInaAct2_value},{durInaAct3_value}),
@@ -200,3 +200,5 @@ if __name__ == "__main__":
 
 
        # , border: '1px solid black', borderCollapse: 'collapse' 
+
+           #qwindow=c({analytical_window_value[0]},{analytical_window_value[1]}),

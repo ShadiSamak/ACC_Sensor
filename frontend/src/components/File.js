@@ -1,25 +1,29 @@
 import '../styles/file.css'
 import { useState, useEffect } from "react";
 import axios from 'axios';
-import Switch from '@mui/material/Switch';
 import Select from 'react-select';
 import tmzone from '../data/timezones.json'
-import DayNightSwitch from './DaynightSwitch';
+import Switch from '@mui/material/Switch';
+
 const { uniqueNamesGenerator, adjectives, colors, animals } = require('unique-names-generator');
 
 export default function File({ parentChangeActiveTab, ...rest }) {
 
+    // Sleep Analysis
+    const [sleepAnalysis, setSleepAnalysis] = useState(false)
+    const handleSleepAnalysisChange = (event) => { setSleepAnalysis(event.target.checked); }
+    
     const tmzoneoptions = tmzone.map(t => ({
         "label": t.Country_City_Code,
         "value": t.Country_City_Code
     }))
-    
-    const [selectedTime, setSelectedTime] = useState({"label": "Australia/Melbourne","value": "Australia/Melbourne"});
-    
+
+    const [selectedTime, setSelectedTime] = useState({ "label": "Australia/Melbourne", "value": "Australia/Melbourne" });
+
     const shortName = uniqueNamesGenerator({
         dictionaries: [adjectives, animals, colors], // colors can be omitted here as not used
         length: 3
-    }) + ".R";
+    })// + ".R";
 
 
     function handleTmZoneChange(event) {
@@ -28,13 +32,7 @@ export default function File({ parentChangeActiveTab, ...rest }) {
 
     const [file, setFile] = useState([]);
     const [outputfile, setoutputfile] = useState(shortName);
-    const [dataDur, setdataDur] = useState(24);
 
-
-    function changeDataDur(e) {
-        if (e.target.checked == false) setdataDur(12)
-        else setdataDur(24)
-    }
 
     function changeHandler(event) {
         localStorage.setItem("input_file_name", JSON.stringify(event.target.files[0].name));
@@ -58,10 +56,12 @@ export default function File({ parentChangeActiveTab, ...rest }) {
         setoutputfile(file_name)
     }
 
-    useEffect(() => { localStorage.setItem('day_night', JSON.stringify(dataDur)); }, [dataDur])
+    // Store in memory
     useEffect(() => { localStorage.setItem('time_zone', JSON.stringify(selectedTime)); }, [selectedTime])
     useEffect(() => { localStorage.setItem('output_file_name', JSON.stringify(outputfile)); }, [outputfile])
-
+    useEffect(() => { localStorage.setItem('sleep_analysis', JSON.stringify(sleepAnalysis));
+    console.log(sleepAnalysis)
+     }, [sleepAnalysis])
 
     return (
         <div className="mainBlock">
@@ -71,12 +71,13 @@ export default function File({ parentChangeActiveTab, ...rest }) {
             <div className="gap" />
             <div className="textblock">
 
-
-                <br />
-                <h4>Collected Data for: </h4>
-                <DayNightSwitch t1="Day" t2="24 Hours" onClick={changeDataDur} />
-
-                <br />
+                <span style={{ fontSize: '15pt' }}> Sleep Analysis</span>
+                <Switch
+                    checked={sleepAnalysis}
+                    onChange={handleSleepAnalysisChange}
+                    inputProps={{ 'aria-label': 'controlled' }}
+                />
+                <br /><br />
                 <h4>TimeZone: </h4>
                 <Select id={"Timezone_Eventlister"}
                     options={tmzoneoptions}
@@ -95,10 +96,26 @@ export default function File({ parentChangeActiveTab, ...rest }) {
                 <input type="text" style={{ width: '40vh' }} defaultValue={shortName} onChange={upnamechangeHandler} />
                 <p style={{ fontStyle: 'italic' }}>Stored Location : app_location/output/{outputfile}</p>
 
-                <a style={{ display: 'flex', paddingRight: '10px', justifyContent: 'flex-end', fontSize: 20 }} onClick={() => parentChangeActiveTab("preprocessing")} >  NEXT  {'\u27A1'}</a></div>
+            </div>
 
             <p>{file}</p>
 
         </div>
     )
 }
+
+/*
+import DayNightSwitch from './DaynightSwitch';
+<a style={{ display: 'flex', paddingRight: '10px', justifyContent: 'flex-end', fontSize: 20 }} onClick={() => parentChangeActiveTab("preprocessing")} >  NEXT  {'\u27A1'}</a>
+                <br />
+                <h4>Collected Data for: </h4>
+                <DayNightSwitch t1="Day" t2="24 Hours" onClick={changeDataDur} />
+    const [dataDur, setdataDur] = useState(24);
+
+
+    function changeDataDur(e) {
+        if (e.target.checked == false) setdataDur(12)
+        else setdataDur(24)
+    }
+    useEffect(() => { localStorage.setItem('day_night', JSON.stringify(dataDur)); }, [dataDur])
+                */

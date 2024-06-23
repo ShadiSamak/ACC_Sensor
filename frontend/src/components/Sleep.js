@@ -18,8 +18,14 @@ export default function Sleep({ parentChangeActiveTab, ...rest }) {
         if (localStorageValue !== null) {
             const newValue = !JSON.parse(localStorageValue);
             setDisableTextBoxes(newValue);
-            // console.log(JSON.parse(localStorageValue))
-        }
+
+            if (newValue === true){
+                setTimeThreshold(0)
+                setAngelThreshold(0)}
+            else{
+                setTimeThreshold(5)
+                setAngelThreshold(5)}
+}
     }, [localStorage.getItem('sleep_analysis')]);
 
     // Time Threshold
@@ -120,8 +126,14 @@ export default function Sleep({ parentChangeActiveTab, ...rest }) {
                 </tr>
 
             </table>
+        </div>
+    );
+};
 
-            {/* Navigation */}
+
+/*
+
+            
             <table>
                 <tr>
                     <td style={{ width: '115vh', height: '8vh', textAlign: 'right', verticalAlign: 'middle' }}>
@@ -132,8 +144,8 @@ export default function Sleep({ parentChangeActiveTab, ...rest }) {
                     </td>
                 </tr>
             </table>
-        </div>
-    );
-};
 
 
+
+
+*/
