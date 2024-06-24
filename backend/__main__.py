@@ -51,8 +51,10 @@ def upload_file():
 def config():   
     data={}
     if request.method == 'POST':
+   
         data = request.data.decode('utf-8') 
         data_json = json.loads(data)
+        print(data_json)
         day_night_value = data_json["day_night"]
         time_zone_value = data_json["time_zone"]
         input_file_name = data_json['input_file_name']
@@ -104,10 +106,14 @@ def config():
         
         ## Additional conditions
         day_night_value_con = "c(1,2,3,4,5)" if day_night_value == 24 else "c(1,2,5)"
-        output_path = "output/"+output_file_name+".R"
         
-        with open(output_path, 'w') as f:
-            rScript = f"""
+        current_dir = os.getcwd()
+        output_dir = os.path.join(current_dir, "output")
+        output_file_name = "leading_falcon_scarlet"  
+        output_path = os.path.join(output_dir, f"{output_file_name}.R")
+        
+
+        rScript = f"""
 library(GGIR)
 GGIR(
     mode={day_night_value_con},
@@ -181,7 +187,8 @@ GGIR(
     viewingwindow=1
     )
     """
-            f.write(rScript)
+    with open(output_path, 'w') as f:
+        f.write(rScript)
 
         return send_file(output_path)
 
