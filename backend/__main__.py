@@ -1,6 +1,7 @@
 import flask
 from flask import Flask, request, send_from_directory, send_file
 from flask_cors import CORS
+import subprocess
 import json
 import os
 # app = flask.Flask(__name__)
@@ -11,7 +12,7 @@ import os
 # send_from_directory(app.static_folder+ '/' + path, 'index.html')
 #    return flask.render_template("index.html" ,token="Hello Flask-React")
 
-
+input_file = None
 app = flask.Flask(__name__, static_url_path='',
                   static_folder='../frontend/build')
 #comment this on deployment
@@ -30,22 +31,45 @@ def serve(path):
 
 @app.route('/input', methods=['POST'])
 def upload_file():
-    try :
-        
+    
+    try :    
         uploaded_file = request.files['file']
+
+        input_file_path = os.getcwd()
+        input_file_path_url = os.path.dirname(input_file_path)+'/inputfile/input.csv'#+uploaded_file.filename
+        print(input_file_path_url)
+        
         if uploaded_file.filename != '':
-            with open('inputfile/'+uploaded_file.filename, 'w') as f:
-            
-                send_file('inputfile/'+uploaded_file.filename)
-            #uploaded_file.save("inputfile/"+uploaded_file.filename)
+            message = uploaded_file.filename
+            with open(input_file_path_url, 'w') as f:    
+                uploaded_file.save(input_file_path_url)
+                input_file = uploaded_file
         return uploaded_file.filename
     except Exception as inst:
-        print(type(inst))    # the exception instance
-        print(inst.args)     # arguments stored in .args
-        print(inst)  
-        return inst
+         print(type(inst))    # the exception instance
+         print(inst.args)     # arguments stored in .args
+         print(inst)  
+         return str(inst)
+    return message
 
-
+def run_r_script(script_path):
+    try:
+        # Run the R script
+        result = subprocess.run(['Rscript', script_path], check=True, capture_output=True, text=True)       
+        
+        return {
+            "stdout": result.stdout,
+            "stderr": result.stderr,
+            "returncode": result.returncode
+        }
+    except subprocess.CalledProcessError as e:
+        print(f"An error occurred while running the R script: {e}")
+        return {
+            "error": str(e),
+            "stdout": e.stdout,
+            "stderr": e.stderr,
+            "returncode": e.returncode
+        }
 
 @app.route('/config', methods=['POST'])
 def config():   
@@ -54,15 +78,24 @@ def config():
    
         data = request.data.decode('utf-8') 
         data_json = json.loads(data)
-        print(data_json)
+        #print(data_json)
         day_night_value = data_json["day_night"]
         time_zone_value = data_json["time_zone"]
-        input_file_name = data_json['input_file_name']
+
+        if input_file is not None:
+            input_file_name = input_file
+        else:
+            input_file_name = data_json['input_file_name']    
+
+        input_file_name = os.getcwd()
+        input_file_name = os.path.dirname(input_file_name)+"/inputfile/input.csv"
+        print(input_file_name)
+
         output_file_name =data_json['output_file_name']
         windows1_value = 5 if (data_json['windows1_value']=="0" or data_json['windows1_value']=="") else data_json['windows1_value']
         windows2_value = 9 if (data_json['windows2_value']=="0" or data_json['windows2_value']=="") else data_json['windows2_value']
         windows3_value = 3600 if (data_json['windows3_value']=="0" or data_json['windows3_value']=="") else data_json['windows3_value']
-        auto_calibration_value =data_json['auto_calibration_value']
+        auto_calibration_value =data_json['auto_calibration_value'].upper()
         pa_enmo_value =data_json['pa_enmo'].upper()
         pa_enmo_value =data_json['pa_enmo'].upper()
         pa_mad_value =data_json['pa_mad'].upper()
@@ -108,17 +141,27 @@ def config():
         day_night_value_con = "c(1,2,3,4,5)" if day_night_value == 24 else "c(1,2,5)"
         
         current_dir = os.getcwd()
+        current_dir = os.path.dirname(current_dir)
         output_dir = os.path.join(current_dir, "output")
-        output_file_name = "leading_falcon_scarlet"  
+        #output_file_name = "leading_falcon_scarlet"  
         output_path = os.path.join(output_dir, f"{output_file_name}.R")
-        
+        #print("CURRENT:" +output_path)
 
         rScript = f"""
+
+options(repos = c(CRAN = "https://cloud.r-project.org"))
+
+if (!requireNamespace("GGIR", quietly = TRUE)) {{
+    install.packages("GGIR")
+}}
+
+# Load the GGIR package
 library(GGIR)
+
 GGIR(
     mode={day_night_value_con},
     datadir="{input_file_name}",
-    outputdir="{output_file_name}",               
+    outputdir="{output_path}",               
     do.imp=TRUE,
     idloc=2,
     print.filename= TRUE,
@@ -136,8 +179,8 @@ GGIR(
     chunksize={proc_chunk_size_value},
     print.summary=TRUE,
     strategy = {analytical_strategy_value},
-    hrs.del.start = {startofperiod}
-    hrs.del.end = {endOfperiod}
+    hrs.del.start = {startofperiod},
+    hrs.del.end = {endOfperiod},
     maxdur = 0,
     includedaycrit = {day_crit_value},
     qwindow=c({q_win_v1_value},{q_win_v2_value}),
@@ -187,10 +230,15 @@ GGIR(
     viewingwindow=1
     )
     """
+    #print(rScript)
+    
     with open(output_path, 'w') as f:
         f.write(rScript)
-
-        return send_file(output_path)
+        send_file(output_path)
+        # Run the R script
+        result = run_r_script(output_path)
+        print(result)
+        return result #
 
 
 if __name__ == "__main__":

@@ -147,11 +147,7 @@ export default function Run() {
             setAngleThresholdValue("");
             setIgnoreNonWearTimeValue("");
             setHasibValue("");}
-    
-
-        
     }
-    
 
     function changeActivityReport(event) {
         setActivityReport(activityreport => !activityreport)
@@ -261,6 +257,9 @@ export default function Run() {
 
                     <div style={{ textAlign: 'left', verticalAlign: 'top', marginLeft: '15px' }}>
                         <h5 style={{ listStyleType: 'disc' }}> ------- File -------</h5>
+                        <li style={{ listStyleType: 'disc' }}> Input File ---
+                            <span style={{ color: 'dodgerblue', fontSize: '12pt' }}>{inputname_value}</span>
+                        </li>
                         <li style={{ listStyleType: 'disc' }}> Duration - Day - 24h ---
                             <span style={{ color: 'dodgerblue', fontSize: '12pt' }}>{day_night_value}</span>
                         </li>

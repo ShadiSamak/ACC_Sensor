@@ -33,16 +33,19 @@ export default function File({ parentChangeActiveTab, ...rest }) {
     const [file, setFile] = useState([]);
     const [outputfile, setoutputfile] = useState(shortName);
 
+    function inputFileClick(event){
+        console.log(event.target.files[0])
+    }
 
     function changeHandler(event) {
-        localStorage.setItem("input_file_name", JSON.stringify(event.target.files[0].name));
         const formData = new FormData();
         formData.append("file", event.target.files[0]);
-        console.log(event.target.files[0].name);
+        console.log(event.target.files[0])
+        setFile(event.target.files[0].name);
 
         axios({
             method: 'post',
-            url: 'http://localhost:8000/input',
+            url: 'http://localhost:8080/input',
             data: formData,
             config: { headers: { 'Content-Type': 'multipart/form-data' } }
         })
@@ -57,6 +60,7 @@ export default function File({ parentChangeActiveTab, ...rest }) {
     }
 
     // Store in memory
+    useEffect(() => { localStorage.setItem('input_file_name', JSON.stringify(file)); }, [file])
     useEffect(() => { localStorage.setItem('time_zone', JSON.stringify(selectedTime)); }, [selectedTime])
     useEffect(() => { localStorage.setItem('output_file_name', JSON.stringify(outputfile)); }, [outputfile])
     useEffect(() => { localStorage.setItem('sleep_analysis', JSON.stringify(sleepAnalysis));
@@ -89,7 +93,7 @@ export default function File({ parentChangeActiveTab, ...rest }) {
                 <br />
                 <h4>Input File: </h4>
                 <br />
-                <input type="file" className="butttons" name="imgUpload" accept='.csv' onChange={changeHandler} />
+                <input type="file" className="butttons" name="imgUpload" accept='.csv' onChange={changeHandler} onClick={inputFileClick} />
                 <br /><br />
                 <h4>Output File Name: </h4>
                 <br />
